@@ -11,6 +11,7 @@ var myFirebaseRef = new Firebase("https://watchwithus.firebaseio.com/");
 var routes = require('./routes/index');
 var login = require('./routes/login');
 var createaccount = require('./routes/createaccount');
+var onboarding = require('./routes/onboarding');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/login', login);
 app.use('/createaccount', createaccount);
+app.use('/onboarding', onboarding);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
