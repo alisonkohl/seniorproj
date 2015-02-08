@@ -1,20 +1,27 @@
-
+<center>
+	<h2>Sign Up</h1>
+</center>
+<form style="margin-top: 40px;" action="/onboarding" method="POST">
+	<div class="form-group">
+		<label for="nameinput">Name</label>
+		<input type="text" class = "form-control" id="nameinput" name="name" placeholder="Your name">
+	</div>
+	<div class="form-group">
+		<label for="emailinput">Email address</label>
+		<input type="email" class = "form-control" id="emailinput" name="email" placeholder="Enter email">
+	</div>
+	<div class="form-group">
+	    <label for="passwordinput">Password</label>
+	    <input type="password" class="form-control" id="passwordinput" name="password" placeholder="Password">
+	</div>
+	<div class="form-group">
+		<input type="hidden" value=-1 name="index">
+	</div>
+	<!-- 		<div class="form-group">
+		    <label for="confirmpasswordinput">Confirm Password</label>
+		    <input type="password" class="form-control" id="confirmpasswordinput" placeholder="Password">
+		</div> -->
 	<center>
-		<h3>Create New Account</h3>
+		<button type="submit" class="btn btn-default">Watch With Us!</button>
 	</center>
-	<form style="margin-top: 40px;" action="/onboarding" method="POST">
-		<div class="form-group">
-			<label for="nameinput">Name</label>
-			<input type="text" class = "form-control" id="nameinput" name="name" placeholder="Your name">
-		</div>
-		<div class="form-group">
-			<label for="emailinput">Email address</label>
-			<input type="email" class = "form-control" id="emailinput" name="email" placeholder="Enter email">
-		</div>
-		<div class="form-group">
-		    <label for="passwordinput">Password</label>
-		    <input type="password" class="form-control" id="passwordinput" name="password" placeholder="Password">
-		</div>
-		<div class="form-group">
-			<input type="hidden" value=-1 name="index">
-		</div>
+</form>
