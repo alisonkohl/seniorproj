@@ -1,15 +1,24 @@
-<h1>Onboarding Page</h1>
-
-{{#each movies}}
-	<p>{{title}}</p>
-	<p>{{synopsis}}</p>
-	<p>{{thumbnail}}</p>
-	<p>{{audience_score}}</p>
-{{/each}}
+<center>
+	<h2>Help us get to know you!</h2>
+	<p><i>Rate 10 movies you've seen to start receiving recommendations.</i></p>
+	{{#each movies}}
+		<h3>What did you think of</h3>
+		<h1 style="margin-top:-10px">{{title}}?</h1>
+		<p>{{synopsis}}</p>
+		<img src="{{thumbnail}}" height="220px"></img>
+		<br/>
+		<div class="btn-group" role="group" aria-label="..." style="margin-top:15px;">
+			<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span><br/>Unwatchable</button>
+			<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span><br/>Mediocre</button>
+			<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span><br/>Good</button>
+			<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><br/>Incredible!</button>
+		</div>
+	{{/each}}
+</center>
 
 <form style="margin-top: 40px;" action="/onboarding" method="POST">
-		<div class="form-group">
-			<input type="hidden" value={{index}} name="index">
-		</div>
-		<center><button type="submit" class="btn btn-default">Next movie</button></center>
-	</form>
+	<div class="form-group">
+		<input type="hidden" value={{index}} name="index">
+	</div>
+	<center><button type="submit" class="btn btn-default">Next movie</button></center>
+</form>

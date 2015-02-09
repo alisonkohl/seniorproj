@@ -31,7 +31,7 @@ router.post('/', function(req, res, next) {
 			var doc = JSON.parse(body);
 			var title = doc.title;
 			var synopsis = doc.synopsis;
-			var thumbnail = doc.posters.thumbnail;
+			var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 			var audience_score = doc.ratings.audience_score;
 
 			moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});			
@@ -106,7 +106,7 @@ router.post('/', function(req, res, next) {
 					var doc = JSON.parse(body);
 					var title = doc.title;
 					var synopsis = doc.synopsis;
-					var thumbnail = doc.posters.thumbnail;
+					var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 					var audience_score = doc.ratings.audience_score;
 
 					moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
