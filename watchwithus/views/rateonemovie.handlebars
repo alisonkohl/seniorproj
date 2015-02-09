@@ -1,12 +1,10 @@
 <center>
-	<h2>Help us get to know you!</h2>
-	<p><i>Rate 10 or more movies you've seen to start receiving recommendations.</i></p>
-	<h3>What did you think of</h3>
+	<h2>Rate this movie!</h2>
 	<h1 style="margin-top:-10px">{{title}}?</h1>
 	<img src="{{thumbnail}}" height="220px"></img>
 	<br/>
 	<!-- <div class="btn-group" role="group" aria-label="..." style="margin-top:15px;"> -->
-		<form action="onboarding?moviesToRate={{moviesToRate}}" method="POST" style="display:inline-block;
+		<form action="mainmenu" method="POST" style="display:inline-block;
     margin:auto;">
 			<div class="form-group">
 				<input type="hidden" value="1" name="rating"></input>
@@ -19,7 +17,7 @@
 				<span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
 			</button>
 		</form>
-		<form action="onboarding?moviesToRate={{moviesToRate}}" method="POST" style="display:inline-block;
+		<form action="mainmenu" method="POST" style="display:inline-block;
     margin:auto;">
 			<div class="form-group">
 				<input type="hidden" value="2" name="rating"></input>
@@ -31,7 +29,7 @@
 				<span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
 			</button>
 		</form>
-		<form action="onboarding?moviesToRate={{moviesToRate}}" method="POST" style="display:inline-block;
+		<form action="mainmenu" method="POST" style="display:inline-block;
     margin:auto;">
 			<div class="form-group">
 				<input type="hidden" value="3" name="rating"></input>
@@ -43,7 +41,7 @@
 				<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
 			</button>
 		</form>
-		<form action="onboarding?moviesToRate={{moviesToRate}}" method="POST" style="display:inline-block;
+		<form action="mainmenu" method="POST" style="display:inline-block;
     margin:auto;">
 			<div class="form-group">
 				<input type="hidden" value="4" name="rating"></input>
@@ -56,27 +54,4 @@
 				<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
 			</button>
 		</form>
-	<!-- </div> -->
-	<br/>
-	<form action="onboarding?moviesToRate={{moviesToRate}}" method="POST">
-		<div class="form-group">
-			<input type="hidden" value="0" name="rating"></input>
-		</div>
-		<button type="submit" class="btn btn-default">
-			Skip
-		</button>
-	</form>
-	<br/>
-	<!-- <a role="button" href="/mainmenu" class="btn btn-default" id="continuebutton">
-		Get Recommendations!
-	</a> -->
-	{{#if showButton}}
-		<a role="button" href="/mainmenu" class="btn btn-default" id="continuebutton">
-		Get Recommendations!
-		</a>
-	{{else}}
-		<a role="button" href="/mainmenu" class="btn btn-default disabled" id="continuebutton">
-		Get Recommendations!
-		</a>
-	{{/if}}
 </center>
