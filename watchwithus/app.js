@@ -14,7 +14,7 @@ var createaccount = require('./routes/createaccount');
 var onboarding = require('./routes/onboarding');
 var mainmenu = require('./routes/mainmenu');
 var findMovie = require('./routes/findmovie');
-var rateonemovie require('./routes/rateonemovie');
+var rateonemovie = require('./routes/rateonemovie');
 
 var app = express();
 
@@ -36,7 +36,7 @@ app.use('/login', login);
 app.use('/createaccount', createaccount);
 app.use('/onboarding', onboarding);
 app.use('/mainmenu', mainmenu);
-app.use('/findmovie', findmovie);
+app.use('/findmovie', findMovie);
 app.use('/rateonemovie', rateonemovie);
 
 // catch 404 and forward to error handler

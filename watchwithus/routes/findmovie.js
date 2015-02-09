@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
+var request = require('request');
 
 router.get('/', function(req, res, next) {
 
@@ -21,7 +22,7 @@ router.get('/', function(req, res, next) {
 		var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 		var audience_score = doc.ratings.audience_score;
 							
-		res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId});
+		res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'mid': movieId});
 						
 	});
 });

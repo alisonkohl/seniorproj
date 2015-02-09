@@ -23,14 +23,14 @@ router.post('/', function(req, res, next) {
 		var newMoviesRated;
 		var newMoviesToRate;
 		
-		newMoviesRated = parseInt(moviesRated) + 1;
+		// newMoviesRated = parseInt(moviesRated) + 1;
 		var ratingsRef = specificUserRef.child("ratings");
 		ratingsRef.push({
 		  	mid: parseInt(form_data.mid),
-		  	rating: rating
+		  	rating: form_data.rating
 		});
 
-		specificUserRef.update({moviesRated: newMoviesRated});
+		// specificUserRef.update({moviesRated: newMoviesRated});
 		res.render('mainmenu', {title: 'Main Menu'});
 
 	} else  {
