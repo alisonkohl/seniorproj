@@ -67,18 +67,17 @@
 		</button>
 	</form>
 	<br/>
-	<button type="button" class="btn btn-default" id="continuebutton">
-		<a href="/mainmenu"></a>
+	<!-- <a role="button" href="/mainmenu" class="btn btn-default" id="continuebutton">
 		Get Recommendations!
-	</button>
+	</a> -->
 	{{#if showButton}}
-		<script>
-			$('#continuebutton').prop('disabled', false);
-		</script>
+		<a role="button" href="/mainmenu" class="btn btn-default" id="continuebutton">
+		Get Recommendations!
+		</a>
 	{{else}}
-		<script>
-			$('#continuebutton').prop('disabled', true);
-		</script>
+		<a role="button" href="/mainmenu" class="btn btn-default disabled" id="continuebutton">
+		Get Recommendations!
+		</a>
 	{{/if}}
 	<br/>
 </center>

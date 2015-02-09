@@ -13,16 +13,40 @@ router.post('/', function(req, res, next) {
 	var email = form_data.email;
 	var password = form_data.password;
 
-	db.authWithPassword({
-		email    : email,
-		password : password
-	}, function(error, authData) {
-	  	if (error) {
-	    	res.render('login', {title: 'Login', 'errorMessage': true});
-		} else {
-	    	res.render('mainmenu', { title: 'Main Menu'});
-	  	}
-	});
+	if (email == undefined) {
+
+		var authData = db.getAuth();
+		uid = authData.uid;
+
+		var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+
+		var newMoviesRated;
+		var newMoviesToRate;
+		
+		newMoviesRated = parseInt(moviesRated) + 1;
+		var ratingsRef = specificUserRef.child("ratings");
+		ratingsRef.push({
+		  	mid: parseInt(form_data.mid),
+		  	rating: rating
+		});
+
+		specificUserRef.update({moviesRated: newMoviesRated});
+		res.render('mainmenu', {title: 'Main Menu'});
+
+	} else  {
+
+		db.authWithPassword({
+			email    : email,
+			password : password
+		}, function(error, authData) {
+		  	if (error) {
+		    	res.render('login', {title: 'Login', 'errorMessage': true});
+			} else {
+		    	res.render('mainmenu', { title: 'Main Menu'});
+		  	}
+		});
+
+	}
 
 });
 
