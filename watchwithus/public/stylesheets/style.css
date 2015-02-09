@@ -1,6 +1,7 @@
 body {
-	/*background-color: #6cdb9b;*/
+	background-color: #eaf9f0;
   	font: 16px "Droid Serif", Helvetica, Arial, sans-serif;
+  	color: color: #12512d;;
 }
 
 a {
@@ -9,9 +10,25 @@ a {
 
 h1 {
 	font-family: 'Fredoka One', cursive;
+	color: #12512d;
 }
 
 h2 {
+	font-family: 'Fredoka One', cursive;
+	color: #12512d;
+}
+
+h3 {
+	font-family: 'Fredoka One', cursive;
+	color: #12512d;
+}
+
+h4 {
+	font-family: 'Fredoka One', cursive;
+	color: #12512d;
+}
+
+h5 {
 	font-family: 'Fredoka One', cursive;
 	color: #12512d;
 }

@@ -21,7 +21,6 @@ router.post('/', function(req, res, next) {
 		var index = form_data.index;
 		var properIndex = parseInt(index) + 1;
 
-
 		var movieId = "";
 
 		/*var authClient = new FirebaseSimpleLogin(myRef, function(error, user) {
