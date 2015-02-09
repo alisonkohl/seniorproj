@@ -3,10 +3,16 @@ var router = express.Router();
 var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require("request");
+var url = require('url');
 
 var movieIds = ["10288", "10597"]
 
 router.post('/', function(req, res, next) {
+
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
+	var moviesToRate = query['moviesToRate'];
+	console.log("moviesToRate: " + moviesToRate);
 
 	var form_data = req.body;
 
@@ -20,20 +26,9 @@ router.post('/', function(req, res, next) {
 
 		var index = form_data.index;
 		var properIndex = parseInt(index) + 1;
+		var rating = parseInt(form_data.rating);
 
 		var movieId = "";
-
-		/*var authClient = new FirebaseSimpleLogin(myRef, function(error, user) {
-	  		if (error) {
-	    		// an error occurred while attempting login
-	    		console.log(error);
-	  		} else if (user) {
-	    		// user authenticated with Firebase
-	    		console.log("User ID: " + user.uid + ", Provider: " + user.provider);
-	  		} else {
-	    		// user is logged out
-	  		}
-		});*/
 
 		var authData = db.getAuth();
 		console.log("userId: " + authData.uid);
@@ -48,11 +43,24 @@ router.post('/', function(req, res, next) {
 			console.log("moviesRated: " + moviesRated);
 
 			var newIndex = parseInt(index) + 1;
-			//if rated
-			var newMoviesRated = parseInt(moviesRated) + 1;
-			//else don't increment it
 
 			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+
+			var newMoviesRated;
+			var newMoviesToRate;
+			if (rating > 0) {
+				newMoviesToRate = parseInt(moviesToRate) - 1;
+				newMoviesRated = parseInt(moviesRated) + 1;
+				var ratingsRef = specificUserRef.child("ratings");
+		  		ratingsRef.push({
+		  			mid: parseInt(form_data.mid),
+		  			rating: rating
+		  		});
+			} else {
+				newMoviesToRate = parseInt(moviesToRate);
+				newMoviesRated = parseInt(moviesRated);
+			}
+
 			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
 
 			var moviesToRateRef = new Firebase("https://watchwithus.firebaseio.com/moviesToRate");
@@ -72,9 +80,14 @@ router.post('/', function(req, res, next) {
 					var audience_score = doc.ratings.audience_score;
 
 					moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
-								
-
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex});
+					
+					var showButton;
+					if (newMoviesToRate <= 0) {
+						showButton = true;
+					} else {
+						showButton = false;
+					}
+					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'showButton': showButton, 'mid': movieId});
 
 				});
 			});
@@ -164,7 +177,7 @@ router.post('/', function(req, res, next) {
 							moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 							
 
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex});
+							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId});
 						
 
 						});
