@@ -56,6 +56,83 @@ router.post('/', function(req, res, next) {
 		  			mid: parseInt(form_data.mid),
 		  			rating: rating
 		  		});
+
+		  		var genresRef = specificUserRef.child("genres");
+		  		//var genreStringFromQuery = query['genreString'];
+		  		var genreStringFromQuery = form_data.genreString;
+		  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
+		  		var genreArray = genreStringFromQuery.split(',');
+		  		var ids = [];
+		  		for (i = 0; i < genreArray.length; i++) {
+		  			var genreName = genreArray[i];
+		  			console.log("genreName is: " + genreName);
+		  			switch(genreName) {
+		  				case "Animation":
+		  					ids.push("16");
+		  					break;
+		  				case "Kids & Family":
+		  					console.log("got in Kids");
+		  					ids.push("10751");
+		  					console.log("ids is now: " + ids);
+		  					break;
+		  				case "Science Fiction & Fantasy":
+		  					ids.push("14");
+		  					ids.push("878");
+		  					break;
+		  				case "Comedy": 
+		  					ids.push("35");
+		  					break;
+		  				case "Mystery & Suspense":
+		  					ids.push("9648");
+		  					break;
+		  				case "Action & Adventure":
+		  					ids.push("28");
+		  					ids.push("12");
+		  					break;
+		  				case "Drama":
+		  					ids.push("18");
+		  					break;
+		  				case "Documentary":
+		  					ids.push("99");
+		  					break;
+		  				case "Art House & International":
+		  					ids.push("10769");
+		  					break;
+		  				case "Horror":
+		  					ids.push("27");
+		  					break;
+		  				case "Musical & Peforming Arts":
+		  					ids.push("10402");
+		  					break;
+		  				case "Romance":
+		  					ids.push("10749");
+		  					break;
+		  				case "Television":
+		  					ids.push("10770");
+		  					break;
+		  				case "Western":
+		  					ids.push("37");
+		  					break;
+		  			}
+		  		}
+		  		console.log("ids are " + ids);
+		  		for (n = 0; n < ids.length; n++){
+		  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
+		  				var currValue = snapshot.val();
+		  				var ratingAndCount = currValue.split(' ');
+		  				var currRating = parseFloat(ratingAndCount[0]);
+		  				var currCount = parseFloat(ratingAndCount[1]);
+
+		  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+		  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+		  				console.log("newRatingString is: " + newRatingString);
+		  				foo = {};
+		  				foo[ids[n]] = newRatingString;
+		  				genresRef.update(foo);
+
+		  			});
+		  		}
+
 			} else {
 				newMoviesToRate = parseInt(moviesToRate);
 				newMoviesRated = parseInt(moviesRated);
@@ -78,6 +155,12 @@ router.post('/', function(req, res, next) {
 					var synopsis = doc.synopsis;
 					var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 					var audience_score = doc.ratings.audience_score;
+					var genres = doc.genres;
+					var genre_string = "";
+					for (j = 0; j < genres.length - 1; j++) {
+						genre_string += (genres[j] +",");
+					}
+					genre_string += genres[genres.length - 1];
 
 					moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 					
@@ -87,7 +170,7 @@ router.post('/', function(req, res, next) {
 					} else {
 						showButton = false;
 					}
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'showButton': showButton, 'mid': movieId});
+					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string});
 
 				});
 			});
@@ -129,6 +212,7 @@ router.post('/', function(req, res, next) {
 		  				db2.set({
 		  					name: form_data.name,
 		  					ratings: {},
+		  					genres: {},
 		  					index: 0,
 		  					moviesRated: 0
 		  				});
@@ -138,15 +222,30 @@ router.post('/', function(req, res, next) {
 		  					name: form_data.name,
 		  					ratings: {},
 		  					index: -1
+		  				});*/
+
+		  				var db3 = db2.child("genres");
+		  				db3.set({
+		  					16: "0 0",
+		  					10751: "0 0",
+		  					14: "0 0",
+		  					878: "0 0",
+		  					35: "0 0",
+		  					9648: "0 0",
+		  					53: "0 0",
+		  					28: "0 0",
+		  					12: "0 0",
+		  					18: "0 0",
+		  					99: "0 0",
+		  					10769: "0 0",
+		  					27: "0 0",
+		  					10402: "0 0",
+		  					10749: "0 0",
+		  					10770: "0 0",
+		  					37: "0 0"
 		  				});
 
-		  				var db3 = db2.child("ratings");
-		  				db3.push({
-		  					mid: 1234,
-		  					rating: 4
-		  				});
-
-		  				var db4 = db2.child("ratings");
+		  				/*var db4 = db2.child("ratings");
 		  				db4.push({
 		  					mid: 8654,
 		  					rating: 4
@@ -173,11 +272,17 @@ router.post('/', function(req, res, next) {
 							var synopsis = doc.synopsis;
 							var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 							var audience_score = doc.ratings.audience_score;
+							var genres = doc.genres;
+							var genre_string = "";
+							for (j = 0; j < genres.length - 1; j++) {
+								genre_string += (genres[j] +",");
+							}
+							genre_string += genres[genres.length - 1];
 
 							moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 							
 
-							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId});
+							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string});
 						
 
 						});
