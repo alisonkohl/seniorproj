@@ -68,6 +68,10 @@ router.post('/', function(req, res, next) {
 	var email = form_data.email;
 	var password = form_data.password;
 
+	if (email == undefined) {
+		res.render('mainmenu', {title: 'Main Menu'});
+	}
+	else {
 	db.authWithPassword({
 		email    : email,
 		password : password
@@ -129,6 +133,7 @@ router.post('/', function(req, res, next) {
 			res.render('mainmenu', {title: 'Main Menu'});
 		}
 	});
+}
 });
 
 module.exports = router;
