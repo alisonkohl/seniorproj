@@ -16,7 +16,7 @@ router.post('/', function(req, res, next) {
 
 	var form_data = req.body;
 
-	var name = form_data.name;
+	var username = form_data.username;
 	var email = form_data.email;
 	var password = form_data.password;
 
@@ -180,7 +180,7 @@ router.post('/', function(req, res, next) {
 	} else {
 
 		db.createUser({
-			name: form_data.name,
+			username: form_data.username,
 			email: form_data.email,
 			password: form_data.password
 		}, function(error) {
@@ -210,7 +210,7 @@ router.post('/', function(req, res, next) {
 
 		  				var db2 = db.child("users/" + id);
 		  				db2.set({
-		  					name: form_data.name,
+		  					username: form_data.username,
 		  					ratings: {},
 		  					genres: {},
 		  					index: 0,

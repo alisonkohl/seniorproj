@@ -15,7 +15,7 @@ var onboarding = require('./routes/onboarding');
 var mainmenu = require('./routes/mainmenu');
 var findMovie = require('./routes/findmovie');
 var rateonemovie = require('./routes/rateonemovie');
-var fbsignin = require('./routes/fbsignin');
+var addfriends = require('./routes/addfriends');
 
 var app = express();
 
@@ -39,7 +39,7 @@ app.use('/onboarding', onboarding);
 app.use('/mainmenu', mainmenu);
 app.use('/findmovie', findMovie);
 app.use('/rateonemovie', rateonemovie);
-app.use('/fbsignin', fbsignin);
+app.use('/addfriends', addfriends);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
