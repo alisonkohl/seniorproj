@@ -57,6 +57,37 @@ router.post('/', function(req, res, next) {
 		  			rating: rating
 		  		});
 
+		  		var year = form_data.year;
+
+		  		String.prototype.replaceAt=function(index, character) {
+				    return this.substr(0, index) + character + this.substr(index+character.length);
+				}
+
+		  		var rounded_year = year.replaceAt(3, "0");
+		  		console.log("rounded year is: " + rounded_year);
+
+
+		  		//switch statement on the years to group into categories, then:
+
+
+		  		var yearsRef = specificUserRef.child("years");
+
+	  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
+	  				var currValue = snapshot.val();
+	  				var ratingAndCount = currValue.split(' ');
+	  				var currRating = parseFloat(ratingAndCount[0]);
+	  				var currCount = parseFloat(ratingAndCount[1]);
+
+	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+	  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+	  				console.log("newRatingString is: " + newRatingString);
+	  				foo = {};
+	  				foo[rounded_year] = newRatingString;
+	  				yearsRef.update(foo);
+
+	  			});
+
+
 		  		var genresRef = specificUserRef.child("genres");
 		  		//var genreStringFromQuery = query['genreString'];
 		  		var genreStringFromQuery = form_data.genreString;
@@ -156,6 +187,10 @@ router.post('/', function(req, res, next) {
 					var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 					var audience_score = doc.ratings.audience_score;
 					var genres = doc.genres;
+					var year = doc.year;
+					console.log("year at bottom is: " + year.toString());
+					var year_str = year.toString();
+
 					var genre_string = "";
 					for (j = 0; j < genres.length - 1; j++) {
 						genre_string += (genres[j] +",");
@@ -170,7 +205,7 @@ router.post('/', function(req, res, next) {
 					} else {
 						showButton = false;
 					}
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string});
+					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string});
 
 				});
 			});
@@ -213,6 +248,7 @@ router.post('/', function(req, res, next) {
 		  					username: form_data.username,
 		  					ratings: {},
 		  					genres: {},
+		  					years: {},
 		  					index: 0,
 		  					moviesRated: 0
 		  				});
@@ -245,6 +281,22 @@ router.post('/', function(req, res, next) {
 		  					37: "0 0"
 		  				});
 
+		  				var db3 = db2.child("years");
+		  				db3.set({
+		  					1900: "0 0",
+		  					1910: "0 0",
+		  					1920: "0 0",
+		  					1930: "0 0",
+		  					1940: "0 0",
+		  					1950: "0 0",
+		  					1960: "0 0",
+		  					1970: "0 0",
+		  					1980: "0 0",
+		  					1990: "0 0",
+		  					2000: "0 0",
+		  					2010: "0 0"
+		  				});
+
 		  				/*var db4 = db2.child("ratings");
 		  				db4.push({
 		  					mid: 8654,
@@ -273,6 +325,8 @@ router.post('/', function(req, res, next) {
 							var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 							var audience_score = doc.ratings.audience_score;
 							var genres = doc.genres;
+							var year_str = (doc.year).toString();
+							console.log("year in weird place is: " + year_str);
 							var genre_string = "";
 							for (j = 0; j < genres.length - 1; j++) {
 								genre_string += (genres[j] +",");
@@ -282,7 +336,7 @@ router.post('/', function(req, res, next) {
 							moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 							
 
-							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string});
+							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str});
 						
 
 						});
