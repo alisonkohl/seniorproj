@@ -1,0 +1,15 @@
+<center>
+<!-- 	<ul id="friendList">
+		{{#each friends}}
+			<li>{{username}}</li>
+		{{/each}}
+	</ul> -->
+	<select class="js-example-basic-multiple" multiple="multiple">
+		{{#each friends}}
+			<option value={{id}}>{{username}}</option>
+		{{/each}}
+	</select>
+	<script>
+		$(".js-example-basic-multiple").select2();
+	</script>
+</center>
