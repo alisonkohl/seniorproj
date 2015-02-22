@@ -4,15 +4,57 @@ var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require('request');
 
-router.get('/', function(req, res, next) {
+router.post('/', function(req, res, next) {
 
 	var authData = db.getAuth();
 	
 	uid = authData.uid;
 
+	var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+	var allUsers = "";
+	counter = 0;
+
+	var form_data = req.body;
+	var query = form_data.query;
+	var friendsAdded = form_data.friendsAdded;
+
+	if (query == "") {
+		//usersRef.orderByChild
+		db.orderByChild("users").on("child_added", function(snapshot) {
+			console.log(snapshot.key());
+			if (snapshot.key() == "users") {
+				//console.log(snapshot.val());
+				var namesArray = new Array();
+				console.log(snapshot.val());
+				console.log(Object.keys(snapshot.val()));
+				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
+				for (i = 0; i < arr.length; i++) {
+					namesArray.push(arr[i].name);
+				}
+				res.render('addfriends', {title: 'Add Friends', 'namesArray': namesArray});
+			}
+		});
+	}
+
+
+	/*usersRef.orderByChild("name").startAt("Ja").endAt("Ja~").on("child_added", function(snapshot) {
+
+		counter++;
+		allUsers += (snapshot.val().name + ",");
+		console.log(snapshot.val().name);
+		console.log(snapshot.val());
+
+		if (counter == 5) {
+			res.render('addfriends', {title: 'Add Friends', 'allUsers': allUsers});
+		}
+
+
+
+	});*/
+
 	var movieId = "9559";
 
-	request({
+	/*request({
 		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
 		method: "GET",
 	}, function(error, response, body) {
@@ -24,7 +66,7 @@ router.get('/', function(req, res, next) {
 							
 		res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'mid': movieId});
 						
-	});
+	});*/
 });
 
 module.exports = router;
