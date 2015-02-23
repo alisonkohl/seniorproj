@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
 	});
 });
 
-router.post('/', function(req, res, next) {
+/*router.post('/', function(req, res, next) {
 
 	var authData = db.getAuth();
 	
@@ -65,6 +65,23 @@ router.post('/', function(req, res, next) {
 			res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'mid': movieId, 'index': index});
 		});
 	});
+});*/
+
+router.post('/', function(req, res, next) {
+
+	var authData = db.getAuth();
+	uid = authData.uid;
+	var index = req.body.index;
+
+	if (index == 0) {
+		//run algorithm
+		var movieString = "Godfather*7;Runaway Jury*6.5;Super Size Me*4";
+
+	} else {
+		var movieString = req.body.movieString;
+
+	}
+
 });
 
 module.exports = router;
