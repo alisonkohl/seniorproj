@@ -173,7 +173,155 @@ router.post('/', function(req, res, next) {
 	var password = form_data.password;
 
 	if (email == undefined) {
-		res.render('mainmenu', {title: 'Main Menu'});
+
+		var authData = db.getAuth();
+		console.log("userId: " + authData.uid);
+		uid = authData.uid;
+
+		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+
+		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+			var index = snapshot.val().index;
+			var moviesRated = snapshot.val().moviesRated;
+			console.log("index: " + index);
+			console.log("moviesRated: " + moviesRated);
+			var movieTitle = form_data.title;
+			var rating = parseInt(form_data.rating);
+			var movieDbRatingFromForm = parseFloat(form_data.movieRating);
+
+			var newIndex = parseInt(index) + 1;
+
+			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+
+			var newMoviesRated;
+			var newMoviesToRate;
+			
+			var difference = rating - movieDbRatingFromForm;
+			newMoviesRated = parseInt(moviesRated) + 1;
+			var ratingsRef = specificUserRef.child("ratings");
+	  		ratingsRef.push({
+	  			title: movieTitle,
+	  			rating: rating,
+	  			average_rating_from_movie_db: movieDbRatingFromForm,
+	  			rating_difference: difference
+	  		});
+
+	  		var year = form_data.year;
+
+	  		String.prototype.replaceAt=function(index, character) {
+			    return this.substr(0, index) + character + this.substr(index+character.length);
+			}
+
+	  		var rounded_year = year.replaceAt(3, "0");
+	  		console.log("rounded year is: " + rounded_year);
+
+
+	  		//switch statement on the years to group into categories, then:
+
+
+	  		var yearsRef = specificUserRef.child("years");
+
+  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
+
+  				var currValue = snapshot.val();
+  				var ratingAndCount = currValue.split(' ');
+  				var currRating = parseFloat(ratingAndCount[0]);
+  				var currDiff = parseFloat(ratingAndCount[1]);
+  				var currCount = parseFloat(ratingAndCount[2]);
+
+  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
+  				console.log("newRatingString is: " + newRatingString);
+  				foo = {};
+  				foo[rounded_year] = newRatingString;
+  				yearsRef.update(foo);
+
+  			});
+
+
+	  		var genresRef = specificUserRef.child("genres");
+	  		//var genreStringFromQuery = query['genreString'];
+	  		var genreStringFromQuery = form_data.genreString;
+	  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
+	  		var genreArray = genreStringFromQuery.split(',');
+	  		var ids = [];
+	  		for (i = 0; i < genreArray.length; i++) {
+	  			var genreName = genreArray[i];
+	  			console.log("genreName is: " + genreName);
+	  			switch(genreName) {
+	  				case "Animation":
+	  					ids.push("16");
+	  					break;
+	  				case "Kids & Family":
+	  					console.log("got in Kids");
+	  					ids.push("10751");
+	  					console.log("ids is now: " + ids);
+	  					break;
+	  				case "Science Fiction & Fantasy":
+	  					ids.push("14");
+	  					ids.push("878");
+	  					break;
+	  				case "Comedy": 
+	  					ids.push("35");
+	  					break;
+	  				case "Mystery & Suspense":
+	  					ids.push("9648");
+	  					break;
+	  				case "Action & Adventure":
+	  					ids.push("28");
+	  					ids.push("12");
+	  					break;
+	  				case "Drama":
+	  					ids.push("18");
+	  					break;
+	  				case "Documentary":
+	  					ids.push("99");
+	  					break;
+	  				case "Art House & International":
+	  					ids.push("10769");
+	  					break;
+	  				case "Horror":
+	  					ids.push("27");
+	  					break;
+	  				case "Musical & Peforming Arts":
+	  					ids.push("10402");
+	  					break;
+	  				case "Romance":
+	  					ids.push("10749");
+	  					break;
+	  				case "Television":
+	  					ids.push("10770");
+	  					break;
+	  				case "Western":
+	  					ids.push("37");
+	  					break;
+	  			}
+	  		}
+	  		console.log("ids are " + ids);
+	  		for (n = 0; n < ids.length; n++){
+	  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
+
+	  				var currValue = snapshot.val();
+	  				var ratingAndCount = currValue.split(' ');
+	  				var currRating = parseFloat(ratingAndCount[0]);
+	  				var currDiff = parseFloat(ratingAndCount[1]);
+	  				var currCount = parseFloat(ratingAndCount[2]);
+
+	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
+	  				console.log("newRatingString is: " + newRatingString);
+	  				foo = {};
+	  				foo[ids[n]] = newRatingString;
+	  				genresRef.update(foo);
+
+	  			});
+	  		}
+			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
+
+			res.render('mainmenu', {title: 'Main Menu'});
+		});
 	}
 	else {
 		db.authWithPassword({
