@@ -414,7 +414,7 @@ router.post('/', function(req, res, next) {
 							}
 						}
 						console.log("render lock is: " + render_lock);
-						if (render_lock >= 10) {
+						if (render_lock >= 50) {
 							if (triggered == false) {
 								triggered = true;
 								console.log("movieString before render is: " + movieString)
