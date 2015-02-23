@@ -23,15 +23,15 @@ router.post('/', function(req, res, next) {
 		db.orderByChild("users").on("child_added", function(snapshot) {
 			console.log(snapshot.key());
 			if (snapshot.key() == "users") {
-				//console.log(snapshot.val());
-				var namesArray = new Array();
+				var userIds = Object.keys(snapshot.val());
 				console.log(snapshot.val());
 				console.log(Object.keys(snapshot.val()));
 				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
+				var userData = new Array();
 				for (i = 0; i < arr.length; i++) {
-					namesArray.push(arr[i].name);
+					userData.push({'id': userIds[i], 'username': arr[i].username})
 				}
-				res.render('addfriends', {title: 'Add Friends', 'namesArray': namesArray});
+				res.render('addfriends', {title: 'Add Friends', 'users': userData});
 			}
 		});
 	}

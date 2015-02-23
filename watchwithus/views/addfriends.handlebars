@@ -1,14 +1,13 @@
 <center>
-<!-- 	<ul id="friendList">
-		{{#each friends}}
-			<li>{{username}}</li>
-		{{/each}}
-	</ul> -->
-	<select class="js-example-basic-multiple" multiple="multiple">
-		{{#each friends}}
+	<select class="js-example-basic-multiple" name="group" form="friendsform" multiple="multiple" style="width: 90%">
+		{{#each users}}
 			<option value={{id}}>{{username}}</option>
 		{{/each}}
 	</select>
+	<form id="friendsform" style="margin-top: 40px;" action="/findmovie" method="POST">
+		<input type="hidden" value=-1 name="index"/>
+		<center><button type="submit" class="btn btn-default">Let's Go!</button></center>
+	</form>
 	<script>
 		$(".js-example-basic-multiple").select2();
 	</script>

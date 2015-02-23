@@ -175,6 +175,8 @@ router.post('/', function(req, res, next) {
 
 			moviesToRateRef.orderByKey().equalTo(newIndex.toString()).on("child_added", function(snapshot) {
 		  		movieId = snapshot.val();
+		  		var movieIdValues = movieId.split(' ');
+		  		movieId = movieIdValues[0];
 		  		console.log("movieId: " + movieId);
 
 				request({
@@ -313,6 +315,8 @@ router.post('/', function(req, res, next) {
 
 		  		moviesToRateRef.orderByKey().equalTo("0").on("child_added", function(snapshot) {
 		  			movieId = snapshot.val();
+		  			var movieIdValues = movieId.split(' ');
+		  			movieId = movieIdValues[0];
 		  			console.log("movieId: " + movieId);
 
 				  		request({
