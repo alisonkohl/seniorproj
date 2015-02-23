@@ -32,33 +32,247 @@ router.post('/', function(req, res, next) {
 	uid = authData.uid;
 	var postbody = req.body;
 	var group = postbody.group;
+	if (group == undefined) {
+		group = new Array();
+	}
+	group.push(uid);
 	console.log(group);
 	var index = postbody.index;
+	console.log("index: " + index);
 	if (index == 0) {
-		var movieString = "Godfather*7;Runaway Jury*6.5;Super Size Me#4";
-		var moviesArr = movieString.split(';');
-		var currMovie = moviesArr[index];
-		var movieData = currMovie.split('*');
-		var movieName = movieData[0];
-		var movieRating = movieData[1];
 
-		 request({
-      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
-      		method: "GET",
-		}, function(error, response, body) {
-			var doc = JSON.parse(body);
-			var title = doc.movies[0].title;
-			var synopsis = doc.movies[0].synopsis;
-			var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0]posters.thumbnail.length-7) + "det.jpg";
-			var audience_score = doc.movies[0].ratings.audience_score;
-			var genres = doc.movies[0].genres;
-			var year = doc.movies[0].year;
-			
-			res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'genres': genres, 'year': year, 'mid': movieId, 'index': index, 'movieString': movieString});
+		var g_arr = {"16": "0 0", "10751": "0 0", "14": "0 0", "878": "0 0", "35": "0 0", "9648": "0 0", "53": "0 0", "28": "0 0", "12": "0 0", "18": "0 0", "99": "0 0", "10769": "0 0", "27": "0 0", "10402": "0 0", "10749": "0 0", "10770": "0 0", "37": "0 0"};
+		var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
+
+		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+			for (f_id = 0; f_id < group.length; f_id++) {
+				var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + group[f_id]);
+
+				//console.log(specificUserRef);
+
+				/*Get the top genres*/
+
+				var genresRef = specificUserRef.child("genres");
+				//console.log("genreRef is: " + genresRef);
+				var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
+				var g_lock = 0;
+				for (g = 0; g < all_genres.length; g++) {
+					genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
+						console.log("we got here");
+						average_rating = snapshot.val();
+						console.log("oldRatingString(g) for " + snapshot.key() + "is: " + snapshot.val());
+						var ratingArray = average_rating.split(' ');
+
+						if (parseFloat(ratingArray[1]) <= -1.5) {
+							delete g_arr[snapshot.key()];
+						} else {
+							var temp_val = g_arr[snapshot.key()];
+							temp_val = temp_val.split(' ');
+							var currRating = parseFloat(temp_val[0]);
+	  						var currCount = parseFloat(temp_val[1]);
+
+	  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
+			  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+			  				console.log("newRatingString(g) for " + snapshot.key() + "is: " + newRatingString);
+			  				g_arr[snapshot.key()] = newRatingString;
+						}
+						g_lock++;
+					});
+				}
+
+				while (g_lock < all_genres.length) {
+				}
+				console.log("done");
+
+
+				/*Get the top years*/
+				var yearsRef = specificUserRef.child("years");
+				var all_years = ["1900", "1910", "1920", "1930", "1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010"];
+				var y_lock = 0;
+
+				for (y = 0; y < all_years.length; y++) {
+					yearsRef.orderByKey().equalTo(all_years[y]).once("child_added", function(snapshot) {
+						average_rating = snapshot.val();
+						console.log("oldRatingString(y) for " + snapshot.key() + "is: " + snapshot.val());
+						var ratingArray = average_rating.split(' ');
+
+						if (parseFloat(ratingArray[1]) <= -1.5) {
+							delete y_arr[snapshot.key()];
+						} else {
+							var temp_val = y_arr[snapshot.key()];
+							temp_val = temp_val.split(' ');
+							var currRating = parseFloat(temp_val[0]);
+	  						var currCount = parseFloat(temp_val[1]);
+
+	  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
+			  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+			  				console.log("newRatingString(y) for " + snapshot.key() + " is: " + newRatingString);
+			  				y_arr[snapshot.key()] = newRatingString;
+						}
+						y_lock++;
+					});
+				}
+
+				while (y_lock < all_years.length) {
+					console.log("waiting at y.........");
+				}
+				console.log("done");
+
+			}
+
+			/*Generate the array of movieDB queries*/
+			String.prototype.replaceAt=function(index, character) {
+				return this.substr(0, index) + character + this.substr(index+character.length);
+			}
+
+			var query_arr = new Array();
+			for (var g2 in g_arr) {
+				for (var y2 in y_arr) {
+					//so here i want to generate combo queries based on the rating
+					if (g_arr.hasOwnProperty(g2) && y_arr.hasOwnProperty(y2)) {
+						var g_rating_split = g_arr[g2].split(' ');
+						var g_rating = parseFloat(g_rating_split[0]);
+						var y_rating_split = y_arr[y2].split(' ');
+						var y_rating = parseFloat(y_rating_split[0]);
+						if (g_rating == 0 || y_rating == 0) {
+							continue;
+						}
+						var g_y_avg = (g_rating + y_rating) / 2;
+						console.log("g_y_avg for " + g2 + " and " + y2 + " is " + g_y_avg);
+						if (g_y_avg < 0.5) {
+							continue;
+						}
+						var rating_min = 8.0 - g_y_avg;
+
+						var low_year = y2;
+						var high_year = 0;
+						var decade_to_inc = parseInt(low_year[2]);
+
+						if (decade_to_inc != 9) {
+							var decade_incremented = parseInt(low_year[2]) + 1;
+							high_year = low_year.replaceAt(2, decade_incremented.toString());
+						} else {
+							high_year = "2000";
+						}
+						query_to_push = "with_genres=" + g2 + "&primary_release_date.gte=" + low_year + "-01-01&primary_release_date.lte=" + high_year + "-01-01&vote_average.gte=" + rating_min;
+						console.log("query_to_push is: " + query_to_push);
+						query_arr.push(query_to_push);
+					}
+				}
+			}
+
+
+			/*Randomize the order of the array*/
+			function shuffle(array) {
+			  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+			  // While there remain elements to shuffle...
+			  while (0 !== currentIndex) {
+
+			    // Pick a remaining element...
+			    randomIndex = Math.floor(Math.random() * currentIndex);
+			    currentIndex -= 1;
+
+			    // And swap it with the current element.
+			    temporaryValue = array[currentIndex];
+			    array[currentIndex] = array[randomIndex];
+			    array[randomIndex] = temporaryValue;
+			  }
+
+			  return array;
+			}
+			shuffle(query_arr);
+			console.log(query_arr);
+
+
+			//I want to reccomend 50 movies
+			// I have, say, 23 queries
+
+			var num_per = Math.floor(50 / query_arr.length);
+			num_per++;
+			console.log("numper is: " + num_per);
+
+			var movieString = "";
+			var render_lock = 0;
+			var triggered = false;
+
+			for (q = 0; q < query_arr.length; q++) {
+				to_query = query_arr[q];
+				request({
+			      		url: "http://api.themoviedb.org/3/discover/movie?" + to_query + "&vote_count.gte=50&api_key=3db59b073812110b693901ba4501b0d2",
+			      		method: "GET",
+				}, function(error, response, body) {
+					if (render_lock < 50) {
+						console.log("q is: " + q);
+						console.log("url is: http://api.themoviedb.org/3/discover/movie?" + to_query + "&vote_count.gte=50&api_key=3db59b073812110b693901ba4501b0d2");
+						var doc = JSON.parse(body);
+						var results = doc.results;
+						var num_per_2 = num_per;
+						//so what if num_per > number of results?
+						if (num_per_2 > results.length) {
+							num_per_2 = results.length;
+						}
+						console.log("numper2 is: " + num_per_2);
+						if (num_per_2 != 0) {
+							for (r = 0; r < num_per_2 - 1; r++) {
+								var moviePoster = results[r].poster_path;
+								console.log("title is: " + results[r].title);
+								movieString += (results[r].title + "*" + results[r].vote_average + "*" + moviePoster + ";");
+								render_lock++;
+							}
+							if (q == query_arr.length - 1) {
+								var moviePoster = results[num_per_2 - 1].poster_path;
+								movieString += (results[results.length - 1].title + "*" + results[r].vote_average + "*" + moviePoster);
+								render_lock++;
+							} else {
+								var moviePoster = results[num_per_2 - 1].poster_path;
+								console.log("result here is: " + results[results.length - 1].title)
+								movieString += (results[results.length - 1].title + "*" + results[r].vote_average + "*" + moviePoster + ";");
+								render_lock++;
+							}
+							console.log("movieString is now: " + movieString)
+						}
+					}
+					console.log("render lock is: " + render_lock);
+					if (render_lock >= 50) {
+						if (triggered == false) {
+							triggered = true;
+							console.log("movieString before render is: " + movieString)
+							var moviesArr = movieString.split(';');
+							var currMovie = moviesArr[index];
+							var movieData = currMovie.split('*');
+							var movieName = movieData[0];
+							var movieRating = movieData[1];
+
+							 request({
+					      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
+					      		method: "GET",
+							}, function(error, response, body) {
+								index++;
+								var doc = JSON.parse(body);
+								var title = doc.movies[0].title;
+								var synopsis = doc.movies[0].synopsis;
+								var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
+								var audience_score = doc.movies[0].ratings.audience_score;
+								var genres = doc.movies[0].genres;
+								var year = doc.movies[0].year;
+								var movieId = doc.movies[0].id;
+								var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
+								console.log("uri: " + uri);
+								
+								res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'genres': genres, 'year': year, 'mid': movieId, 'index': index, 'movieString': movieString});
+							});
+						}
+					}
+				});
+			}		
 		});
+
+
 	} else {
 		index++;
-		var movieString = req.body.movieString;
+		var movieString = postbody.movieString;
 		var moviesArr = movieString.split(';');
 		var currMovie = moviesArr[index];
 		var movieData = currMovie.split('*');
@@ -72,12 +286,15 @@ router.post('/', function(req, res, next) {
 			var doc = JSON.parse(body);
 			var title = doc.movies[0].title;
 			var synopsis = doc.movies[0].synopsis;
-			var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0]posters.thumbnail.length-7) + "det.jpg";
+			var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
 			var audience_score = doc.movies[0].ratings.audience_score;
 			var genres = doc.movies[0].genres;
 			var year = doc.movies[0].year;
+			var movieId = doc.movies[0].id;
+			var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
+			console.log("uri: " + uri);
 			
-			res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'genres': genres, 'year': year, 'mid': movieId, 'index': index, 'movieString': movieString});
+			res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'genres': genres, 'year': year, 'mid': movieId, 'index': index, 'movieString': movieString});
 		});
 	}
 });

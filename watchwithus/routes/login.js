@@ -9,11 +9,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var form_data = req.body;
-	db.createUser({
-		name: form_data.name,
-		email: form_data.email,
-		password: form_data.password
+	/*var form_data = req.body;
+	db.authWithPassword({
+		email    : form_data.email,
+		password : form_data.password
 	}, function(error) {
 		if (error == null) {
 			console.log("User created successfully");
@@ -21,7 +20,7 @@ router.post('/', function(req, res, next) {
 		} else {
 			console.log("Error creating user: ", error);
 		}
-	});
+	});*/
 });
 
 /*router.post('/', function(req, res, next) {

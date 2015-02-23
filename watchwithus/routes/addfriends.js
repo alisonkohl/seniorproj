@@ -6,9 +6,9 @@ var request = require('request');
 
 router.post('/', function(req, res, next) {
 
-	res.render('addfriends', {title: 'Add Friends'});
+	//res.render('addfriends', {title: 'Add Friends'});
 
-	/*var authData = db.getAuth();
+	var authData = db.getAuth();
 	
 	uid = authData.uid;
 
@@ -36,7 +36,7 @@ router.post('/', function(req, res, next) {
 				res.render('addfriends', {title: 'Add Friends', 'users': userData});
 			}
 		});
-	}*/
+	}
 
 
 	/*usersRef.orderByChild("name").startAt("Ja").endAt("Ja~").on("child_added", function(snapshot) {

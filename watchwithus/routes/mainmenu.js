@@ -7,14 +7,14 @@ var g_sort = new Array();
 
 router.get('/', function(req, res, next) {
 
-			var authData = db.getAuth();
+			/*var authData = db.getAuth();
 			console.log("userId: " + authData.uid);
 			uid = authData.uid;
 
 			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-
+*/
 			/*Get the top genres*/
-			var genresRef = specificUserRef.child("genres");
+			/*var genresRef = specificUserRef.child("genres");
 			var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
 			var g_arr = new Array();
 			var g_lock = 0;
@@ -36,9 +36,9 @@ router.get('/', function(req, res, next) {
 			}
 			console.log("done");
 
-
+*/
 			/*Get the top years*/
-			var yearsRef = specificUserRef.child("years");
+			/*var yearsRef = specificUserRef.child("years");
 			var all_years = ["1900", "1910", "1920", "1930", "1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010"];
 			var y_arr = new Array();
 			var y_lock = 0;
@@ -61,9 +61,9 @@ router.get('/', function(req, res, next) {
 			}
 			console.log("done");
 
-
+*/
 			/*Generate the array of movieDB queries*/
-			String.prototype.replaceAt=function(index, character) {
+			/*String.prototype.replaceAt=function(index, character) {
 				return this.substr(0, index) + character + this.substr(index+character.length);
 			}
 
@@ -85,10 +85,10 @@ router.get('/', function(req, res, next) {
 					query_arr.push(query_to_push);
 				}
 			}
-
+*/
 
 			/*Randomize the order of the array*/
-			function shuffle(array) {
+			/*function shuffle(array) {
 			  var currentIndex = array.length, temporaryValue, randomIndex ;
 
 			  // While there remain elements to shuffle...
@@ -162,8 +162,8 @@ router.get('/', function(req, res, next) {
 						}
 					}
 				});
-			}
-
+			}*/
+			res.render('mainmenu', {title: 'Main Menu'});
 });
 
 router.post('/', function(req, res, next) {
