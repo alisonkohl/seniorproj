@@ -41,6 +41,8 @@ router.post('/', function(req, res, next) {
 			var moviesRated = snapshot.val().moviesRated;
 			console.log("index: " + index);
 			console.log("moviesRated: " + moviesRated);
+			var movieTitle = form_data.title;
+			var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 
 			var newIndex = parseInt(index) + 1;
 
@@ -49,12 +51,15 @@ router.post('/', function(req, res, next) {
 			var newMoviesRated;
 			var newMoviesToRate;
 			if (rating > 0) {
+				var difference = rating - movieDbRatingFromForm;
 				newMoviesToRate = parseInt(moviesToRate) - 1;
 				newMoviesRated = parseInt(moviesRated) + 1;
 				var ratingsRef = specificUserRef.child("ratings");
 		  		ratingsRef.push({
-		  			mid: parseInt(form_data.mid),
-		  			rating: rating
+		  			title: movieTitle,
+		  			rating: rating,
+		  			average_rating_from_movie_db: movieDbRatingFromForm,
+		  			rating_difference: difference
 		  		});
 
 		  		var year = form_data.year;
@@ -76,10 +81,12 @@ router.post('/', function(req, res, next) {
 	  				var currValue = snapshot.val();
 	  				var ratingAndCount = currValue.split(' ');
 	  				var currRating = parseFloat(ratingAndCount[0]);
-	  				var currCount = parseFloat(ratingAndCount[1]);
+	  				var currDiff = parseFloat(ratingAndCount[1]);
+	  				var currCount = parseFloat(ratingAndCount[2]);
 
 	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
-	  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
 	  				console.log("newRatingString is: " + newRatingString);
 	  				foo = {};
 	  				foo[rounded_year] = newRatingString;
@@ -152,10 +159,12 @@ router.post('/', function(req, res, next) {
 		  				var currValue = snapshot.val();
 		  				var ratingAndCount = currValue.split(' ');
 		  				var currRating = parseFloat(ratingAndCount[0]);
-		  				var currCount = parseFloat(ratingAndCount[1]);
+		  				var currDiff = parseFloat(ratingAndCount[1]);
+		  				var currCount = parseFloat(ratingAndCount[2]);
 
 		  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
-		  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+		  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+		  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
 		  				console.log("newRatingString is: " + newRatingString);
 		  				foo = {};
 		  				foo[ids[n]] = newRatingString;
@@ -177,6 +186,7 @@ router.post('/', function(req, res, next) {
 		  		movieId = snapshot.val();
 		  		var movieIdValues = movieId.split(' ');
 		  		movieId = movieIdValues[0];
+		  		var movieDbRating = movieIdValues[1];
 		  		console.log("movieId: " + movieId);
 
 				request({
@@ -207,7 +217,7 @@ router.post('/', function(req, res, next) {
 					} else {
 						showButton = false;
 					}
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string});
+					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string, 'movieDbRating': movieDbRating});
 
 				});
 			});
@@ -264,39 +274,39 @@ router.post('/', function(req, res, next) {
 
 		  				var db3 = db2.child("genres");
 		  				db3.set({
-		  					16: "0 0",
-		  					10751: "0 0",
-		  					14: "0 0",
-		  					878: "0 0",
-		  					35: "0 0",
-		  					9648: "0 0",
-		  					53: "0 0",
-		  					28: "0 0",
-		  					12: "0 0",
-		  					18: "0 0",
-		  					99: "0 0",
-		  					10769: "0 0",
-		  					27: "0 0",
-		  					10402: "0 0",
-		  					10749: "0 0",
-		  					10770: "0 0",
-		  					37: "0 0"
+		  					16: "0 0 0",
+		  					10751: "0 0 0",
+		  					14: "0 0 0",
+		  					878: "0 0 0",
+		  					35: "0 0 0",
+		  					9648: "0 0 0",
+		  					53: "0 0 0",
+		  					28: "0 0 0",
+		  					12: "0 0 0",
+		  					18: "0 0 0",
+		  					99: "0 0 0",
+		  					10769: "0 0 0",
+		  					27: "0 0 0",
+		  					10402: "0 0 0",
+		  					10749: "0 0 0",
+		  					10770: "0 0 0",
+		  					37: "0 0 0"
 		  				});
 
 		  				var db3 = db2.child("years");
 		  				db3.set({
-		  					1900: "0 0",
-		  					1910: "0 0",
-		  					1920: "0 0",
-		  					1930: "0 0",
-		  					1940: "0 0",
-		  					1950: "0 0",
-		  					1960: "0 0",
-		  					1970: "0 0",
-		  					1980: "0 0",
-		  					1990: "0 0",
-		  					2000: "0 0",
-		  					2010: "0 0"
+		  					1900: "0 0 0",
+		  					1910: "0 0 0",
+		  					1920: "0 0 0",
+		  					1930: "0 0 0",
+		  					1940: "0 0 0",
+		  					1950: "0 0 0",
+		  					1960: "0 0 0",
+		  					1970: "0 0 0",
+		  					1980: "0 0 0",
+		  					1990: "0 0 0",
+		  					2000: "0 0 0",
+		  					2010: "0 0 0"
 		  				});
 
 		  				/*var db4 = db2.child("ratings");
@@ -317,6 +327,8 @@ router.post('/', function(req, res, next) {
 		  			movieId = snapshot.val();
 		  			var movieIdValues = movieId.split(' ');
 		  			movieId = movieIdValues[0];
+		  			var movieDbRating = movieIdValues[1];
+
 		  			console.log("movieId: " + movieId);
 
 				  		request({
@@ -340,7 +352,7 @@ router.post('/', function(req, res, next) {
 							moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 							
 
-							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str});
+							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
 						
 
 						});

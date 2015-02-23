@@ -6,7 +6,9 @@ var request = require('request');
 
 router.post('/', function(req, res, next) {
 
-	var authData = db.getAuth();
+	res.render('addfriends', {title: 'Add Friends'});
+
+	/*var authData = db.getAuth();
 	
 	uid = authData.uid;
 
@@ -34,7 +36,7 @@ router.post('/', function(req, res, next) {
 				res.render('addfriends', {title: 'Add Friends', 'users': userData});
 			}
 		});
-	}
+	}*/
 
 
 	/*usersRef.orderByChild("name").startAt("Ja").endAt("Ja~").on("child_added", function(snapshot) {
@@ -52,7 +54,7 @@ router.post('/', function(req, res, next) {
 
 	});*/
 
-	var movieId = "9559";
+	//var movieId = "9559";
 
 	/*request({
 		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
