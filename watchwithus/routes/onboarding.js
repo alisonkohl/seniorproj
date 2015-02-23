@@ -328,6 +328,7 @@ router.post('/', function(req, res, next) {
 		  			var movieIdValues = movieId.split(' ');
 		  			movieId = movieIdValues[0];
 		  			var movieDbRating = movieIdValues[1];
+
 		  			console.log("movieId: " + movieId);
 
 				  		request({
