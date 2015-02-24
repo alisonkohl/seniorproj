@@ -34,8 +34,15 @@ router.post('/', function(req, res, next) {
 	var form_data = req.body;
 	var group = postbody.group;
 	console.log("group is: " + group);
+	//watching alone, create new array
 	if (group == undefined) {
 		group = new Array();
+	}
+	//watching with 1 other, comes in as string
+	if (typeof group == 'string' || group instanceof String) {
+		var temp_group = group;
+		group = new Array();
+		group.push(temp_group);
 	}
 	group.push(uid);
 	console.log(group);
