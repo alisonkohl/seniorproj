@@ -9,22 +9,6 @@
 			<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;">
 		</a>-->
 
-		<form action="/rateonemovieandgoback" method="POST" style="display:inline-block; margin:auto;">
-			<div class="form-group">
-				<input type="hidden" value="{{index}}" name="index"></input>
-				<input type="hidden" value="{{movieString}}" name="movieString"></input>
-				<input type="hidden" value="{{movieRating}}" name="movieRating"></input>
-				<input type="hidden" value="{{year}}" name="year"></input>
-				<input type="hidden" value="{{title}}" name="title"></input>
-				<input type="hidden" value="{{thumbnail}}" name="thumbnail"></input>
-				<input type="hidden" value="{{mid}}" name="mid"></input>
-			</div>
-			<button type="submit" class="btn btn-default btn-lg" style="margin:8px;" style="float:left; margin-top:80px;">
-				<span class="glyphicon glyphicon-film" aria-hidden="true" style="font-size:30px;"></span>
-				<br/>
-				Rate This Movie
-			</button>
-		</form>
 		<form action="/findmovie" method="POST" style="display:inline-block; margin:auto;">
 			<div class="form-group">
 				<input type="hidden" value="{{index}}" name="index"></input>
@@ -62,6 +46,22 @@
 				<span class="glyphicon glyphicon-film" aria-hidden="true" style="font-size:30px;"></span>
 				<br/>
 				Watch This Movie
+			</button>
+		</form>
+		<form action="/rateonemovieandgoback" method="POST" style="display:inline-block; margin:auto;">
+			<div class="form-group">
+				<input type="hidden" value="{{index}}" name="index"></input>
+				<input type="hidden" value="{{movieString}}" name="movieString"></input>
+				<input type="hidden" value="{{movieRating}}" name="movieRating"></input>
+				<input type="hidden" value="{{year}}" name="year"></input>
+				<input type="hidden" value="{{title}}" name="title"></input>
+				<input type="hidden" value="{{thumbnail}}" name="thumbnail"></input>
+				<input type="hidden" value="{{mid}}" name="mid"></input>
+			</div>
+			<button type="submit" class="btn btn-default btn-lg" style="margin:8px;" style="float:left; margin-top:80px;">
+				<span class="glyphicon glyphicon-film" aria-hidden="true" style="font-size:30px;"></span>
+				<br/>
+				Rate This Movie
 			</button>
 		</form>
 	</div>
