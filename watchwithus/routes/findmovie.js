@@ -33,6 +33,7 @@ router.post('/', function(req, res, next) {
 	var postbody = req.body;
 	var form_data = req.body;
 	var group = postbody.group;
+	console.log("group is: " + group);
 	if (group == undefined) {
 		group = new Array();
 	}
@@ -243,20 +244,24 @@ router.post('/', function(req, res, next) {
 							console.log("oldRatingString(g) for " + snapshot.key() + "is: " + snapshot.val());
 							var ratingArray = average_rating.split(' ');
 
-							if (parseFloat(ratingArray[1]) <= -1.5) {
+							if (parseFloat(ratingArray[1]) <= (-1.5)) {
+								console.log("deleting an elem");
 								delete g_arr[snapshot.key()];
 							} else {
 								var temp_val = g_arr[snapshot.key()];
-								temp_val = temp_val.split(' ');
-								var currRating = parseFloat(temp_val[0]);
-		  						var currCount = parseFloat(temp_val[1]);
-
-		  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
-				  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
-				  				console.log("newRatingString(g) for " + snapshot.key() + "is: " + newRatingString);
-				  				g_arr[snapshot.key()] = newRatingString;
+								if (temp_val != undefined) {
+									temp_val = temp_val.split(' ');
+									var currRating = parseFloat(temp_val[0]);
+			  						var currCount = parseFloat(temp_val[1]);
+									console.log("we got down here");
+			  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
+					  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+					  				console.log("newRatingString(g) for " + snapshot.key() + "is: " + newRatingString);
+					  				g_arr[snapshot.key()] = newRatingString;
+					  			}
 							}
 							g_lock++;
+							console.log("glock is now: " + g_lock + " out of " + all_genres.length);
 						});
 					}
 
@@ -280,14 +285,16 @@ router.post('/', function(req, res, next) {
 								delete y_arr[snapshot.key()];
 							} else {
 								var temp_val = y_arr[snapshot.key()];
-								temp_val = temp_val.split(' ');
-								var currRating = parseFloat(temp_val[0]);
-		  						var currCount = parseFloat(temp_val[1]);
+								if (temp_val != undefined) {
+									temp_val = temp_val.split(' ');
+									var currRating = parseFloat(temp_val[0]);
+			  						var currCount = parseFloat(temp_val[1]);
 
-		  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
-				  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
-				  				console.log("newRatingString(y) for " + snapshot.key() + " is: " + newRatingString);
-				  				y_arr[snapshot.key()] = newRatingString;
+			  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
+					  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+					  				console.log("newRatingString(y) for " + snapshot.key() + " is: " + newRatingString);
+					  				y_arr[snapshot.key()] = newRatingString;
+					  			}
 							}
 							y_lock++;
 						});
@@ -375,6 +382,7 @@ router.post('/', function(req, res, next) {
 				var movieString = "";
 				var render_lock = 0;
 				var triggered = false;
+				var render_threshhold = 50;
 
 				for (q = 0; q < query_arr.length; q++) {
 					to_query = query_arr[q];
@@ -390,6 +398,8 @@ router.post('/', function(req, res, next) {
 							var num_per_2 = num_per;
 							//so what if num_per > number of results?
 							if (num_per_2 > results.length) {
+								console.log("curbing numper2");
+								render_threshhold = render_threshhold - (num_per_2 - results.length);
 								num_per_2 = results.length;
 							}
 							console.log("numper2 is: " + num_per_2);
@@ -414,7 +424,7 @@ router.post('/', function(req, res, next) {
 							}
 						}
 						console.log("render lock is: " + render_lock);
-						if (render_lock >= 50) {
+						if (render_lock >= render_threshhold) {
 							if (triggered == false) {
 								triggered = true;
 								console.log("movieString before render is: " + movieString)
