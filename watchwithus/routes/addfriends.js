@@ -31,7 +31,9 @@ router.post('/', function(req, res, next) {
 				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
 				var userData = new Array();
 				for (i = 0; i < arr.length; i++) {
-					userData.push({'id': userIds[i], 'username': arr[i].username})
+					if (userIds[i] != uid) {
+						userData.push({'id': userIds[i], 'username': arr[i].username});
+					}
 				}
 				res.render('addfriends', {title: 'Add Friends', 'users': userData});
 			}
