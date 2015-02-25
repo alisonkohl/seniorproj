@@ -196,7 +196,7 @@ router.post('/', function(req, res, next) {
 					var doc = JSON.parse(body);
 					var title = doc.title;
 					var synopsis = doc.synopsis;
-					var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
+					//var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 					var audience_score = doc.ratings.audience_score;
 					var genres = doc.genres;
 					var year = doc.year;
@@ -209,7 +209,7 @@ router.post('/', function(req, res, next) {
 					}
 					genre_string += genres[genres.length - 1];
 
-					moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
+					//moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 					
 					var showButton;
 					if (newMoviesToRate <= 0) {
@@ -217,7 +217,17 @@ router.post('/', function(req, res, next) {
 					} else {
 						showButton = false;
 					}
-					res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string, 'movieDbRating': movieDbRating});
+
+					request({
+						uri: "http://api.themoviedb.org/3/search/movie?query=" + title + "&api_key=3db59b073812110b693901ba4501b0d2",
+						method: "GET",
+					}, function(error, response, body) {
+						var doc2 = JSON.parse(body);
+						var results = doc2.results;
+						var uri = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
+						res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string, 'movieDbRating': movieDbRating});
+
+					});		
 
 				});
 			});
@@ -338,7 +348,7 @@ router.post('/', function(req, res, next) {
 							var doc = JSON.parse(body);
 							var title = doc.title;
 							var synopsis = doc.synopsis;
-							var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
+							//var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
 							var audience_score = doc.ratings.audience_score;
 							var genres = doc.genres;
 							var year_str = (doc.year).toString();
@@ -349,11 +359,18 @@ router.post('/', function(req, res, next) {
 							}
 							genre_string += genres[genres.length - 1];
 
-							moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
-							
+							//moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
 
-							res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
-						
+							request({
+								uri: "http://api.themoviedb.org/3/search/movie?query=" + title + "&api_key=3db59b073812110b693901ba4501b0d2",
+								method: "GET",
+							}, function(error, response, body) {
+								var doc2 = JSON.parse(body);
+								var results = doc2.results;
+								var uri = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
+								res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
+
+							});						
 
 						});
 		  		});
