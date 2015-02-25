@@ -490,6 +490,8 @@ router.post('/', function(req, res, next) {
 				var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
 				var year_str = (year).toString();
 				console.log("year in weird place is: " + year_str);
+
+				/*here, also query moviedb for the synopsis, and display year and other relevant info on next page*/
 				
 				res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
 			});
