@@ -4,6 +4,28 @@ var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require('request');
 
+function post(path, parameters) {
+    var form = $('<form></form>');
+
+    form.attr("method", "post");
+    form.attr("action", path);
+
+    $.each(parameters, function(key, value) {
+        var field = $('<input></input>');
+
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+
+        form.append(field);
+    });
+
+    // The form needs to be a part of the document in
+    // order for us to be able to submit it.
+    $(document.body).append(form);
+    form.submit();
+}
+
 router.get('/', function(req, res, next) {
 
 	var authData = db.getAuth();
@@ -47,6 +69,7 @@ router.post('/', function(req, res, next) {
 	group.push(uid);
 	console.log(group);
 	var index = postbody.index;
+	var increment = postbody.increment;
 	console.log("index: " + index);
 	var rateMovie = postbody.rateMovie;
 	if (rateMovie == "true") {
@@ -414,15 +437,20 @@ router.post('/', function(req, res, next) {
 								for (r = 0; r < num_per_2 - 1; r++) {
 									var moviePoster = results[r].poster_path;
 									console.log("title is: " + results[r].title);
+									console.log("moviePoster is " + moviePoster);
 									movieString += (results[r].title + "*" + results[r].vote_average + "*" + moviePoster + ";");
 									render_lock++;
 								}
 								if (q == query_arr.length - 1) {
 									var moviePoster = results[num_per_2 - 1].poster_path;
+									console.log("title is: " + results[r].title);
+									console.log("moviePoster is " + moviePoster);									
 									movieString += (results[results.length - 1].title + "*" + results[r].vote_average + "*" + moviePoster);
 									render_lock++;
 								} else {
 									var moviePoster = results[num_per_2 - 1].poster_path;
+									console.log("title is: " + results[r].title);
+									console.log("moviePoster is " + moviePoster);
 									console.log("result here is: " + results[results.length - 1].title)
 									movieString += (results[results.length - 1].title + "*" + results[r].vote_average + "*" + moviePoster + ";");
 									render_lock++;
@@ -435,30 +463,39 @@ router.post('/', function(req, res, next) {
 							if (triggered == false) {
 								triggered = true;
 								console.log("movieString before render is: " + movieString)
-								var moviesArr = movieString.split(';');
+								var flag2 = true;
+								var break_flag = false;
+								var movieString2 = movieString;
+								var moviesArr = movieString2.split(';');
 								var currMovie = moviesArr[index];
+								index++;
 								var movieData = currMovie.split('*');
 								var movieName = movieData[0];
+								console.log("movieName is: " + movieName);
 								var movieRating = movieData[1];
 
 								 request({
 						      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
 						      		method: "GET",
 								}, function(error, response, body) {
-									index++;
 									var doc = JSON.parse(body);
-									var title = doc.movies[0].title;
-									var synopsis = doc.movies[0].synopsis;
-									var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
-									var audience_score = doc.movies[0].ratings.audience_score;
-									console.log("title: " + title);
-									var year = doc.movies[0].year;
-									var movieId = doc.movies[0].id;
-									var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
-									var year_str = (year).toString();
-									console.log("year in weird place is: " + year_str);
-									
-									res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
+									/*if (doc.movies[0] == undefined) {
+										console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!doc was undefined");
+										post('/findmovie', {index:index, movieString:movieString,increment:increment});
+									} else {*/
+										var title = doc.movies[0].title;
+										var synopsis = doc.movies[0].synopsis;
+										var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
+										var audience_score = doc.movies[0].ratings.audience_score;
+										console.log("title: " + title);
+										var year = doc.movies[0].year;
+										var movieId = doc.movies[0].id;
+										var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
+										var year_str = (year).toString();
+										console.log("year in weird place is: " + year_str);
+										
+										res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
+									//}
 								});
 							}
 						}
@@ -468,32 +505,46 @@ router.post('/', function(req, res, next) {
 
 
 		} else {
-			index++;
 			var movieString = postbody.movieString;
-			var moviesArr = movieString.split(';');
+			var movieString2 = movieString;
+			var moviesArr = movieString2.split(';');
 			var currMovie = moviesArr[index];
+			var former_index = index;
+			if (increment == 1) {
+				if (index == moviesArr.length - 1) index = 0;
+				else index++;
+			} else {
+				if (index == 0) index = moviesArr.length - 1;
+				else index = index - 1;
+			}
 			var movieData = currMovie.split('*');
 			var movieName = movieData[0];
 			var movieRating = movieData[1];
+			console.log("movieName now is: " + movieName);
 
 			 request({
 	      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
 	      		method: "GET",
 			}, function(error, response, body) {
 				var doc = JSON.parse(body);
-				var title = doc.movies[0].title;
-				var synopsis = doc.movies[0].synopsis;
-				var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
-				var audience_score = doc.movies[0].ratings.audience_score;
-				var year = doc.movies[0].year;
-				var movieId = doc.movies[0].id;
-				var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
-				var year_str = (year).toString();
-				console.log("year in weird place is: " + year_str);
+				/*if (doc.movies[0] == undefined) {
+					console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!doc was undefined");
+					post('/findmovie', {index:index, movieString:movieString,increment:increment});
+				} else {*/			
+					var title = doc.movies[0].title;
+					var synopsis = doc.movies[0].synopsis;
+					var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
+					var audience_score = doc.movies[0].ratings.audience_score;
+					var year = doc.movies[0].year;
+					var movieId = doc.movies[0].id;
+					var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
+					console.log("uri is: " + uri);
+					var year_str = (year).toString();
+					console.log("year in weird place is: " + year_str);
 
-				/*here, also query moviedb for the synopsis, and display year and other relevant info on next page*/
-				
-				res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
+					/*here, also query moviedb for the synopsis, and display year and other relevant info on next page*/
+					res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
+				//}
 			});
 		}
 	}
