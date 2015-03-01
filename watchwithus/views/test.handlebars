@@ -1,0 +1,22 @@
+<script src="javascripts/test-frontend.js"></script>
+
+<p id="display">{{array.[0]}}</p>
+<script>
+	//var newArray = {{array}};
+	var newArray = new Array();
+	{{#each array}}
+		newArray.push("{{this}}");
+	{{/each}}
+	var index = 0;
+
+</script>
+
+<button onclick="myFunction()">Click me</button>
+
+<script>
+	function myFunction() {
+		index++;
+		display.innerHTML = newArray[index];
+	}
+
+</script>

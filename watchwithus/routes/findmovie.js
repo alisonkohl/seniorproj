@@ -457,8 +457,17 @@ router.post('/', function(req, res, next) {
 									var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
 									var year_str = (year).toString();
 									console.log("year in weird place is: " + year_str);
+
+									res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString, 'plot': plot});
+
+									/*request({
+										uri: "http://www.omdbapi.com/?t=" + title + "&plot=short&r=json",
+										method: "GET",	
+									}, function(error, response, body) {
+										var doc2 = JSON.parse(body)
+										var plot = doc2.Plot;
+									});*/
 									
-									res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
 								});
 							}
 						}
@@ -494,6 +503,15 @@ router.post('/', function(req, res, next) {
 				/*here, also query moviedb for the synopsis, and display year and other relevant info on next page*/
 				
 				res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
+				
+				/*request({
+					uri: "http://www.omdbapi.com/?t=" + title + "&plot=short&r=json",
+					method: "GET",	
+				}, function(error, response, body) {
+					var doc2 = JSON.parse(body)
+					var plot = doc2.Plot;
+				});*/
+
 			});
 		}
 	}
