@@ -24,21 +24,26 @@
 //   }
 // });
 
-$( "#window" ).on("swipeleft", swipeleftHandler);
+
+$(document).on("swipeleft", function() {
+	console.log("swiped left document");
+});
+
+$("#window").on("swipeleft", swipeleftHandler);
  
   // Callback function references the event target and adds the 'swipeleft' class to it
 function swipeleftHandler( event ){
-  console.log("swiped left");
+  console.log("swiped left window");
   $.get('/findmovie') {
     window.location.href = '/findmovie';
   }
 }
 
-$( "#window" ).on( "swiperight", swiperightHandler );
+$("#window").on( "swiperight", swiperightHandler );
  
 // Callback function references the event target and adds the 'swipeleft' class to it
 function swiperightHandler( event ){
-  console.log("swiped right");
+  console.log("swiped right window");
   $.get('/findmovie') {
     window.location.href = '/findmovie';
   }
