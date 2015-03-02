@@ -377,12 +377,16 @@ router.post('/', function(req, res, next) {
 							} else {
 								high_year = "2000";
 							}
-							query_to_push = "with_genres=" + g2 + "&primary_release_date.gte=" + low_year + "-01-01&primary_release_date.lte=" + high_year + "-01-01&vote_average.gte=" + rating_min;
+							var query_to_push = "with_genres=" + g2 + "&primary_release_date.gte=" + low_year + "-01-01&primary_release_date.lte=" + high_year + "-01-01&vote_average.gte=" + rating_min;
 							console.log("query_to_push is: " + query_to_push);
 							query_arr.push(query_to_push);
 						}
 					}
 				}
+
+				var query_to_push = "vote_average.gte=7.5";
+				console.log("query_to_push late is: " + query_to_push);
+				query_arr.push(query_to_push);
 
 
 				/*Randomize the order of the array*/
@@ -420,8 +424,18 @@ router.post('/', function(req, res, next) {
 				var triggered = false;
 				var render_threshhold = 50;
 
+
+				function getRandomInt(min, max) {
+				  return Math.floor(Math.random() * (max - min)) + min;
+				}
+
 				for (q = 0; q < query_arr.length; q++) {
 					to_query = query_arr[q];
+					if (to_query == "vote_average.gte=7.5") {
+						var random_page_num = getRandomInt(1,13);
+						var random_page = random_page_num.toString();
+						to_query = "vote_average.gte=7.5&page=" + random_page;
+					}
 					request({
 				      		url: "http://api.themoviedb.org/3/discover/movie?" + to_query + "&vote_count.gte=50&api_key=3db59b073812110b693901ba4501b0d2",
 				      		method: "GET",
