@@ -69,6 +69,7 @@ router.post('/', function(req, res, next) {
 	group.push(uid);
 	console.log(group);
 	var index = postbody.index;
+	console.log("index at beginning of function is: " + index);
 	var increment = postbody.increment;
 	console.log("index: " + index);
 	var rateMovie = postbody.rateMovie;
@@ -254,7 +255,7 @@ router.post('/', function(req, res, next) {
 		});
 
 	} else {
-		if (index == 0) {
+		if (index == -1) {
 
 			var g_arr = {"16": "0 0", "10751": "0 0", "14": "0 0", "878": "0 0", "35": "0 0", "9648": "0 0", "53": "0 0", "28": "0 0", "12": "0 0", "18": "0 0", "99": "0 0", "10769": "0 0", "27": "0 0", "10402": "0 0", "10749": "0 0", "10770": "0 0", "37": "0 0"};
 			var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
@@ -472,8 +473,8 @@ router.post('/', function(req, res, next) {
 								var break_flag = false;
 								var movieString2 = movieString;
 								var moviesArr = movieString2.split(';');
-								var currMovie = moviesArr[index];
 								index++;
+								var currMovie = moviesArr[index];
 								var movieData = currMovie.split('*');
 								var movieName = movieData[0];
 								console.log("movieName is: " + movieName);
@@ -530,15 +531,15 @@ router.post('/', function(req, res, next) {
 			var movieString = postbody.movieString;
 			var movieString2 = movieString;
 			var moviesArr = movieString2.split(';');
-			var currMovie = moviesArr[index];
-			var former_index = index;
 			if (increment == 1) {
-				if (index == moviesArr.length - 1) index = 0;
+				if (index == moviesArr.length - 2) index = 0;
 				else index++;
 			} else {
-				if (index == 0) index = moviesArr.length - 1;
+				if (index == 0) index = moviesArr.length - 2;
 				else index = index - 1;
 			}
+			var currMovie = moviesArr[index];
+			//var former_index = index;
 			var movieData = currMovie.split('*');
 			var movieName = movieData[0];
 			var movieRating = movieData[1];
