@@ -9,8 +9,12 @@ router.post('/', function(req, res, next) {
 
 	var form_data = req.body;
 	var mid = form_data.mid;
+	var index = form_data.index + 1;
 
-	request({
+	res.render('rateonemovieandgoback', {title: 'Find Movie', 'title': form_data.title, 'movieRating': form_data.movieRating, 'thumbnail': form_data.thumbnail, 'genreString': form_data.genres, 'year': form_data.year, 'index': index, 'movieString': form_data.movieString});
+
+
+	/*request({
 		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + mid + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
 		method: "GET",
 	}, function(error, response, body) {
@@ -26,7 +30,7 @@ router.post('/', function(req, res, next) {
 							
 		res.render('rateonemovieandgoback', {title: 'Find Movie', 'title': form_data.title, 'movieRating': form_data.movieRating, 'thumbnail': form_data.thumbnail, 'genreString': genre_string, 'year': form_data.year, 'index': index, 'movieString': form_data.movieString});
 						
-	});
+	});*/
 
 	/*var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
