@@ -105,52 +105,6 @@ router.post('/', function(req, res, next) {
 		  			var genreName = genreArray[i];
 		  			console.log("genreName is: " + genreName);
 		  			switch(genreName) {
-		  				/*case "Animation":
-		  					ids.push("16");
-		  					break;
-		  				case "Kids & Family":
-		  					console.log("got in Kids");
-		  					ids.push("10751");
-		  					console.log("ids is now: " + ids);
-		  					break;
-		  				case "Science Fiction & Fantasy":
-		  					ids.push("14");
-		  					ids.push("878");
-		  					break;
-		  				case "Comedy": 
-		  					ids.push("35");
-		  					break;
-		  				case "Mystery & Suspense":
-		  					ids.push("9648");
-		  					break;
-		  				case "Action & Adventure":
-		  					ids.push("28");
-		  					ids.push("12");
-		  					break;
-		  				case "Drama":
-		  					ids.push("18");
-		  					break;
-		  				case "Documentary":
-		  					ids.push("99");
-		  					break;
-		  				case "Art House & International":
-		  					ids.push("10769");
-		  					break;
-		  				case "Horror":
-		  					ids.push("27");
-		  					break;
-		  				case "Musical & Peforming Arts":
-		  					ids.push("10402");
-		  					break;
-		  				case "Romance":
-		  					ids.push("10749");
-		  					break;
-		  				case "Television":
-		  					ids.push("10770");
-		  					break;
-		  				case "Western":
-		  					ids.push("37");
-		  					break;*/
 		  				case "Animation":
 		  					ids.push("16");
 		  					break;
@@ -240,47 +194,6 @@ router.post('/', function(req, res, next) {
 		  		var movieDbRating = movieIdValues[1];
 		  		console.log("movieId: " + movieId);
 
-				/*request({
-					uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
-					method: "GET",
-				}, function(error, response, body) {
-					var doc = JSON.parse(body);
-					var title = doc.title;
-					var synopsis = doc.synopsis;
-					//var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
-					var audience_score = doc.ratings.audience_score;
-					var genres = doc.genres;
-					var year = doc.year;
-					console.log("year at bottom is: " + year.toString());
-					var year_str = year.toString();
-
-					var genre_string = "";
-					for (j = 0; j < genres.length - 1; j++) {
-						genre_string += (genres[j] +",");
-					}
-					genre_string += genres[genres.length - 1];
-
-					//moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
-					
-					var showButton;
-					if (newMoviesToRate <= 0) {
-						showButton = true;
-					} else {
-						showButton = false;
-					}
-
-					request({
-						uri: "http://api.themoviedb.org/3/search/movie?query=" + title + "&api_key=3db59b073812110b693901ba4501b0d2",
-						method: "GET",
-					}, function(error, response, body) {
-						var doc2 = JSON.parse(body);
-						var results = doc2.results;
-						var uri = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
-						res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'year': year_str, 'showButton': showButton, 'mid': movieId, 'genreString': genre_string, 'movieDbRating': movieDbRating});
-
-					});		
-
-				});*/
 				request({
 					uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
 					method: "GET",
@@ -299,7 +212,7 @@ router.post('/', function(req, res, next) {
 					var synopsis = doc3.Plot;
 					var thumbnail = doc3.Poster;
 					var genres = doc3.Genre;
-					res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating, 'showButton': showButton});
+					res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating, 'showButton': showButton});
 				});	
 			});
 
@@ -410,63 +323,19 @@ router.post('/', function(req, res, next) {
 		  			movieId = movieIdValues[0];
 		  			var movieDbRating = movieIdValues[1];
 
-		  			console.log("movieId: " + movieId);
-
-				  		/*request({
-				      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
-				      		method: "GET",
-						}, function(error, response, body) {
-							var doc = JSON.parse(body);
-							var title = doc.title;
-							var synopsis = doc.synopsis;
-							//var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
-							var audience_score = doc.ratings.audience_score;
-							var genres = doc.genres;
-							var year_str = (doc.year).toString();
-							console.log("year in weird place is: " + year_str);
-							var genre_string = "";
-							for (j = 0; j < genres.length - 1; j++) {
-								genre_string += (genres[j] +",");
-							}
-							genre_string += genres[genres.length - 1];
-
-							//moviesArray.push({'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score});
-
-							request({
-								uri: "http://api.themoviedb.org/3/search/movie?query=" + title + "&api_key=3db59b073812110b693901ba4501b0d2",
-								method: "GET",
-							}, function(error, response, body) {
-								var doc2 = JSON.parse(body);
-								var results = doc2.results;
-								var uri = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
-								request({
-									uri: "http://www.omdbapi.com/?i=tt0114709&plot=short&r=json",
-									method: "GET",
-								}, function(error, response, body) {
-									var doc3 = JSON.parse(body);
-									var newTitle = doc3.Title;
-									var newYear = doc3.Year;
-									var synopsis = doc3.Plot;
-									var thumbnail = doc3.Poster;
-									var genres = doc3.Genre;
-									console.log(newTitle + " " + newYear + " " + synopsis + " " + thumbnail + " " + genres);
-									res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
-								});	
-							});						
-
-						});*/
-						request({
-							uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
-							method: "GET",
-						}, function(error, response, body) {
-							var doc3 = JSON.parse(body);
-							var newTitle = doc3.Title;
-							var newYear = doc3.Year;
-							var synopsis = doc3.Plot;
-							var thumbnail = doc3.Poster;
-							var genres = doc3.Genre;
-							res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
-						});	
+	  				console.log("movieId: " + movieId);
+					request({
+						uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
+						method: "GET",
+					}, function(error, response, body) {
+						var doc3 = JSON.parse(body);
+						var newTitle = doc3.Title;
+						var newYear = doc3.Year;
+						var synopsis = doc3.Plot;
+						var thumbnail = doc3.Poster;
+						var genres = doc3.Genre;
+						res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
+					});	
 		  		});
 
 

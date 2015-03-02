@@ -31,7 +31,10 @@ router.post('/', function(req, res, next) {
 	var form_data = req.body;
 	var mid = form_data.mid;
 
-	request({
+	res.render('rateonemovie', {title: 'Find Movie', 'title': form_data.title, 'movieRating': form_data.movieRating, 'thumbnail': form_data.thumbnail, 'genreString': form_data.genres, 'year': form_data.year});
+
+
+	/*request({
 		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + mid + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
 		method: "GET",
 	}, function(error, response, body) {
@@ -45,7 +48,7 @@ router.post('/', function(req, res, next) {
 							
 		res.render('rateonemovie', {title: 'Find Movie', 'title': form_data.title, 'movieRating': form_data.movieRating, 'thumbnail': form_data.thumbnail, 'genreString': genre_string, 'year': form_data.year});
 						
-	});
+	});*/
 
 	/*var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;

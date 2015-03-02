@@ -26,8 +26,8 @@ router.post('/', function(req, res, next) {
 			console.log(snapshot.key());
 			if (snapshot.key() == "users") {
 				var userIds = Object.keys(snapshot.val());
-				console.log(snapshot.val());
-				console.log(Object.keys(snapshot.val()));
+				//console.log(snapshot.val());
+				//console.log(Object.keys(snapshot.val()));
 				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
 				var userData = new Array();
 				for (i = 0; i < arr.length; i++) {

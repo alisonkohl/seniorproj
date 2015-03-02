@@ -244,7 +244,7 @@ router.post('/', function(req, res, next) {
 	  		//var genreStringFromQuery = query['genreString'];
 	  		var genreStringFromQuery = form_data.genreString;
 	  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
-	  		var genreArray = genreStringFromQuery.split(',');
+	  		var genreArray = genreStringFromQuery.split(', ');
 	  		var ids = [];
 	  		for (i = 0; i < genreArray.length; i++) {
 	  			var genreName = genreArray[i];
@@ -253,23 +253,22 @@ router.post('/', function(req, res, next) {
 	  				case "Animation":
 	  					ids.push("16");
 	  					break;
-	  				case "Kids & Family":
-	  					console.log("got in Kids");
-	  					ids.push("10751");
-	  					console.log("ids is now: " + ids);
-	  					break;
-	  				case "Science Fiction & Fantasy":
-	  					ids.push("14");
+	  				case "Sci-Fi":
 	  					ids.push("878");
+	  					break;
+	  				case "Fantasy":
+	  					ids.push("14");
 	  					break;
 	  				case "Comedy": 
 	  					ids.push("35");
 	  					break;
-	  				case "Mystery & Suspense":
+	  				case "Mystery":
 	  					ids.push("9648");
 	  					break;
-	  				case "Action & Adventure":
+	  				case "Action":
 	  					ids.push("28");
+	  					break;
+	  				case "Adventure":
 	  					ids.push("12");
 	  					break;
 	  				case "Drama":
@@ -278,23 +277,29 @@ router.post('/', function(req, res, next) {
 	  				case "Documentary":
 	  					ids.push("99");
 	  					break;
-	  				case "Art House & International":
-	  					ids.push("10769");
-	  					break;
 	  				case "Horror":
 	  					ids.push("27");
 	  					break;
-	  				case "Musical & Peforming Arts":
+	  				case "Musical":
 	  					ids.push("10402");
 	  					break;
 	  				case "Romance":
 	  					ids.push("10749");
 	  					break;
-	  				case "Television":
-	  					ids.push("10770");
-	  					break;
 	  				case "Western":
 	  					ids.push("37");
+	  					break;
+	  				case "Thriller":
+	  					ids.push("53");
+	  					break;
+	  				case "Crime":
+	  					ids.push("80");
+	  					break;
+	  				case "War":
+	  					ids.push("10752");
+	  					break;
+	  				case "Family":
+	  					ids.push("10751");
 	  					break;
 	  			}
 	  		}
