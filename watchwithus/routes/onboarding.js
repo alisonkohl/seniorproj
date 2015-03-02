@@ -99,13 +99,13 @@ router.post('/', function(req, res, next) {
 		  		//var genreStringFromQuery = query['genreString'];
 		  		var genreStringFromQuery = form_data.genreString;
 		  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
-		  		var genreArray = genreStringFromQuery.split(',');
+		  		var genreArray = genreStringFromQuery.split(', ');
 		  		var ids = [];
 		  		for (i = 0; i < genreArray.length; i++) {
 		  			var genreName = genreArray[i];
 		  			console.log("genreName is: " + genreName);
 		  			switch(genreName) {
-		  				case "Animation":
+		  				/*case "Animation":
 		  					ids.push("16");
 		  					break;
 		  				case "Kids & Family":
@@ -150,6 +150,57 @@ router.post('/', function(req, res, next) {
 		  					break;
 		  				case "Western":
 		  					ids.push("37");
+		  					break;*/
+		  				case "Animation":
+		  					ids.push("16");
+		  					break;
+		  				case "Sci-Fi":
+		  					ids.push("878");
+		  					break;
+		  				case "Fantasy":
+		  					ids.push("14");
+		  					break;
+		  				case "Comedy": 
+		  					ids.push("35");
+		  					break;
+		  				case "Mystery":
+		  					ids.push("9648");
+		  					break;
+		  				case "Action":
+		  					ids.push("28");
+		  					break;
+		  				case "Adventure":
+		  					ids.push("12");
+		  					break;
+		  				case "Drama":
+		  					ids.push("18");
+		  					break;
+		  				case "Documentary":
+		  					ids.push("99");
+		  					break;
+		  				case "Horror":
+		  					ids.push("27");
+		  					break;
+		  				case "Musical":
+		  					ids.push("10402");
+		  					break;
+		  				case "Romance":
+		  					ids.push("10749");
+		  					break;
+		  				case "Western":
+		  					ids.push("37");
+		  					break;
+		  				case "Thriller":
+		  					ids.push("53");
+		  					break;
+		  				case "Crime":
+		  					ids.push("80");
+		  					break;
+		  				case "War":
+		  					ids.push("10752");
+		  					break;
+		  				case "Family":
+		  					ids.push("10751");
 		  					break;
 		  			}
 		  		}
@@ -368,8 +419,19 @@ router.post('/', function(req, res, next) {
 								var doc2 = JSON.parse(body);
 								var results = doc2.results;
 								var uri = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
-								res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
-
+								request({
+									uri: "http://www.omdbapi.com/?i=tt0114709&plot=short&r=json",
+									method: "GET",
+								}, function(error, response, body) {
+									var doc3 = JSON.parse(body);
+									var newTitle = doc3.Title;
+									var newYear = doc3.Year;
+									var synopsis = doc3.Plot;
+									var thumbnail = doc3.Poster;
+									var genres = doc3.Genre;
+									console.log(newTitle + " " + newYear + " " + synopsis + " " + thumbnail + " " + genres);
+									res.render('onboarding', {title: 'Onboarding', 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'year': year_str, 'audience_score': audience_score, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genre_string, 'year': year_str, 'movieDbRating': movieDbRating});
+								});	
 							});						
 
 						});
