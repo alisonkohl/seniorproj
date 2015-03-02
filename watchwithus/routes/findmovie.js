@@ -495,7 +495,7 @@ router.post('/', function(req, res, next) {
 								movieStringArr = movieString.split(';');
 								var movieStringNew = "";
 								var m_arr = {};
-								for (m = 0; m < movieStringArr.length; m++) {
+								for (m = 0; m < movieStringArr.length - 1; m++) {
 									var currMovie = movieStringArr[m];
 									var movieData = currMovie.split('*');
 									var movieName = movieData[0];
@@ -522,7 +522,6 @@ router.post('/', function(req, res, next) {
 												var writer = doc3.Writer;
 												var actors = doc3.Actors;
 												var thumbnail = doc3.Poster;
-
 
 												var m_arr_data = m_arr[newTitle];
 												if (m_arr_data != undefined) {
