@@ -240,7 +240,7 @@ router.post('/', function(req, res, next) {
 		  		var movieDbRating = movieIdValues[1];
 		  		console.log("movieId: " + movieId);
 
-				request({
+				/*request({
 					uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
 					method: "GET",
 				}, function(error, response, body) {
@@ -280,7 +280,27 @@ router.post('/', function(req, res, next) {
 
 					});		
 
-				});
+				});*/
+				request({
+					uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
+					method: "GET",
+				}, function(error, response, body) {
+
+					var showButton;
+					if (newMoviesToRate <= 0) {
+						showButton = true;
+					} else {
+						showButton = false;
+					}
+
+					var doc3 = JSON.parse(body);
+					var newTitle = doc3.Title;
+					var newYear = doc3.Year;
+					var synopsis = doc3.Plot;
+					var thumbnail = doc3.Poster;
+					var genres = doc3.Genre;
+					res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating, 'showButton': showButton});
+				});	
 			});
 
 		});
@@ -392,7 +412,7 @@ router.post('/', function(req, res, next) {
 
 		  			console.log("movieId: " + movieId);
 
-				  		request({
+				  		/*request({
 				      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
 				      		method: "GET",
 						}, function(error, response, body) {
@@ -434,7 +454,19 @@ router.post('/', function(req, res, next) {
 								});	
 							});						
 
-						});
+						});*/
+						request({
+							uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
+							method: "GET",
+						}, function(error, response, body) {
+							var doc3 = JSON.parse(body);
+							var newTitle = doc3.Title;
+							var newYear = doc3.Year;
+							var synopsis = doc3.Plot;
+							var thumbnail = doc3.Poster;
+							var genres = doc3.Genre;
+							res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
+						});	
 		  		});
 
 
