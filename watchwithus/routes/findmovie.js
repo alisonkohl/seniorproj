@@ -429,6 +429,12 @@ router.post('/', function(req, res, next) {
 				  return Math.floor(Math.random() * (max - min)) + min;
 				}
 
+				if (query_arr.length <= 2) {
+					var query_to_push = "vote_average.gte=7.5";
+					console.log("query_to_push b/c it was too short is: " + query_to_push);
+					query_arr.push(query_to_push);
+				}
+
 				for (q = 0; q < query_arr.length; q++) {
 					to_query = query_arr[q];
 					if (to_query == "vote_average.gte=7.5") {
@@ -482,58 +488,84 @@ router.post('/', function(req, res, next) {
 						if (render_lock >= render_threshhold) {
 							if (triggered == false) {
 								triggered = true;
-								console.log("movieString before render is: " + movieString)
-								var flag2 = true;
-								var break_flag = false;
-								var movieString2 = movieString;
-								var moviesArr = movieString2.split(';');
-								index++;
-								var currMovie = moviesArr[index];
-								var movieData = currMovie.split('*');
-								var movieName = movieData[0];
-								console.log("movieName is: " + movieName);
-								var movieRating = movieData[1];
 
-								/*request({
-						      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
-						      		method: "GET",
-								}, function(error, response, body) {
-									var doc = JSON.parse(body);*/
+								console.log("movieString before adding additional parameters is: " + movieString);
+								var render_lock_2 = 0;
+								var triggered_2 = false;
+								movieStringArr = movieString.split(';');
+								var movieStringNew = "";
+								var m_arr = {};
+								for (m = 0; m < movieStringArr.length; m++) {
+									var currMovie = movieStringArr[m];
+									var movieData = currMovie.split('*');
+									var movieName = movieData[0];
+									//so here map movieName to movieData[1]+"*"+movieData[2]
 
-									/*if (doc.movies[0] == undefined) {
-										console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!doc was undefined");
-										post('/findmovie', {index:index, movieString:movieString,increment:increment});
-									} else {*/
-										/*var title = doc.movies[0].title;
-										var synopsis = doc.movies[0].synopsis;
-										var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
-										var audience_score = doc.movies[0].ratings.audience_score;
-										console.log("title: " + title);
-										var year = doc.movies[0].year;
-										var movieId = doc.movies[0].id;
-										var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
-										var year_str = (year).toString();
-										console.log("year in weird place is: " + year_str);
-										
-										res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
-									//}
+									m_arr[movieName] = movieData[1]
+//								delete g_arr[snapshot.key()];
+//								var temp_val = g_arr[snapshot.key()];
 
-								});*/
 
-								request({
-						      		uri: "http://www.omdbapi.com/?t=" + encodeURI(movieName) + "&y=&plot=short&r=json",
-						      		method: "GET",
-								}, function(error, response, body) {
-									var doc3 = JSON.parse(body);	
-									var newTitle = doc3.Title;
-									var newYear = doc3.Year;
-									var synopsis = doc3.Plot;
-									var thumbnail = doc3.Poster;
-									var genres = doc3.Genre;
+									request({
+							      		uri: "http://www.omdbapi.com/?t=" + encodeURI(movieName) + "&y=&plot=short&r=json",
+							      		method: "GET",
+									}, function(error, response, body) {
+										if (render_lock_2 < movieStringArr.length) {
+											if (body != undefined) {
+												var doc3 = JSON.parse(body);	
+												var newTitle = doc3.Title;
+												var newYear = doc3.Year;
+												var runtime = doc3.Runtime;
+												var genres = doc3.Genre;
+												var synopsis = doc3.Plot;
+												var director = doc3.Director;
+												var writer = doc3.Writer;
+												var actors = doc3.Actors;
+												var thumbnail = doc3.Poster;
 
-									res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': index, 'movieString': movieString, 'genres': genres});
 
-								});
+												var m_arr_data = m_arr[newTitle];
+												if (m_arr_data != undefined) {
+													movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";");
+													console.log("updated movieStringNew to: " + movieStringNew);
+												}
+											}
+											//could need fencepost here for no ; at final...
+											render_lock_2++;
+										}
+										if (render_lock_2 == movieStringArr.length) {
+											if (triggered_2 == false) {
+												triggered_2 = true;
+												index++;
+												console.log("shit we actually got here and movieString is: " + movieStringNew);
+												res.render('findmovie', {'index': index, 'movieString': movieStringNew});
+											}
+										}
+									});
+								}
+
+
+//********starting here is the part for getting user rating
+												/*var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+												console.log(specificUserRef2);
+
+												/*Get the top genres*/
+
+												/*var genresRef = specificUserRef.child("genres");
+												//console.log("genreRef is: " + genresRef);
+												//var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
+												var m_lock = 0;
+												for (m2 = 0; m2 < movieStringArr.length; m2++) {
+													genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
+														users_rating = snapshot.val();					
+														movieStringArr[m2...
+
+												while (g_lock < all_genres.length) {
+												}
+												console.log("done");*/
+//**** end part for user rating
+
+
 							}
 						}
 					});
