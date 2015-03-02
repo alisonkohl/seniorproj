@@ -512,7 +512,23 @@ router.post('/', function(req, res, next) {
 									}, function(error, response, body) {
 										if (render_lock_2 < movieStringArr.length) {
 											if (body != undefined) {
-												var doc3 = JSON.parse(body);	
+												//body = body.replace(/"/g, '\\"');
+												//body = body.replace(/\\/g, "\\\\");
+												//console.log("responsebody: " + JSON.stringify(body));
+												var newBody = "{";
+												for (var a = 1; a < body.length - 1; a++) {
+													var currChar = body.charAt(a);
+													var nextChar = body.charAt(a + 1);
+													var prevChar = body.charAt(a - 1);
+													if (currChar == '"' && (prevChar != '{' && nextChar != ':' && prevChar != ':' && nextChar != ',' && prevChar != ',' && nextChar != '}')) {
+														newBody += "\\";
+														newBody += currChar;
+													} else {
+														newBody += currChar;
+													}
+												}
+												newBody += "}";
+												var doc3 = JSON.parse(newBody);
 												var newTitle = doc3.Title;
 												var newYear = doc3.Year;
 												var runtime = doc3.Runtime;
@@ -532,7 +548,7 @@ router.post('/', function(req, res, next) {
 											//could need fencepost here for no ; at final...
 											render_lock_2++;
 										}
-										if (render_lock_2 == movieStringArr.length) {
+										if (render_lock_2 == movieStringArr.length - 1) {
 											if (triggered_2 == false) {
 												triggered_2 = true;
 												index++;

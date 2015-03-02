@@ -1,3 +1,38 @@
+<script>
+	var movieString = "{{movieString}}";
+	var index = {{index}};
+	var adjustedMovieString = unescapeHtml(movieString);
+	var movieStringArr = adjustedMovieString.split(";");
+	var titles = new Array();
+	var aggregateRatings = new Array();
+	var years = new Array();
+	var runtimes = new Array();
+	var allGenres = new Array();
+	var synopses = new Array();
+	var directors = new Array();
+	var writers = new Array();
+	var actors = new Array();
+	var thumbnails = new Array();
+	for (var a = 0; a < movieStringArr.length - 1; a++) {
+		var currMovieInfo = movieStringArr[a];
+		var currMovieInfoArr = currMovieInfo.split("*");
+		titles.push(decodeURI(currMovieInfoArr[0]));
+		aggregateRatings.push(decodeURI(currMovieInfoArr[1]));
+		years.push(decodeURI(currMovieInfoArr[2]));
+		runtimes.push(decodeURI(currMovieInfoArr[3]));
+		allGenres.push(decodeURI(currMovieInfoArr[4]));
+		synopses.push(decodeURI(currMovieInfoArr[5]));
+		directors.push(decodeURI(currMovieInfoArr[6]));
+		writers.push(decodeURI(currMovieInfoArr[7]));
+		actors.push(decodeURI(currMovieInfoArr[8]));
+		thumbnails.push(decodeURI(currMovieInfoArr[9]));
+	}
+
+	function unescapeHtml(safe) {
+    	return $('<div />').html(safe).text();
+	}
+</script>
+
 <center>
 	<div id="window">
 		<h1 style="margin-top:30px; margin-bottom:30px;">{{title}}</h1>
