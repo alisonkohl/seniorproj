@@ -521,13 +521,13 @@ router.post('/', function(req, res, next) {
 													var nextChar = body.charAt(a + 1);
 													var prevChar = body.charAt(a - 1);
 													if (currChar == '"' && (prevChar != '{' && nextChar != ':' && prevChar != ':' && nextChar != ',' && prevChar != ',' && nextChar != '}')) {
-														newBody += "\\";
-														newBody += currChar;
+														newBody += '\"';
 													} else {
 														newBody += currChar;
 													}
 												}
 												newBody += "}";
+												console.log("newBody: " + newBody);
 												var doc3 = JSON.parse(newBody);
 												var newTitle = doc3.Title;
 												var newYear = doc3.Year;
