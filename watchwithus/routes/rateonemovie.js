@@ -30,7 +30,7 @@ router.post('/', function(req, res, next) {
 
 	var form_data = req.body;
 	var mid = form_data.mid;
-
+	console.log("title: " + form_data.title);
 	res.render('rateonemovie', {title: 'Find Movie', 'title': form_data.title, 'movieRating': form_data.movieRating, 'thumbnail': form_data.thumbnail, 'genreString': form_data.genres, 'year': form_data.year});
 
 

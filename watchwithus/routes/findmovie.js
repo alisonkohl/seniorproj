@@ -75,7 +75,6 @@ router.post('/', function(req, res, next) {
 	var rateMovie = postbody.rateMovie;
 	if (rateMovie == "true") {
 
-
 		var authData = db.getAuth();
 		console.log("userId: " + authData.uid);
 		uid = authData.uid;
@@ -87,9 +86,9 @@ router.post('/', function(req, res, next) {
 			var moviesRated = snapshot.val().moviesRated;
 			console.log("index: " + index);
 			console.log("moviesRated: " + moviesRated);
-			var movieTitle = form_data.title;
+			var movieTitle = form_data.title.substring(0, form_data.title.length - 1);
 			var rating = parseInt(form_data.rating);
-			var movieDbRatingFromForm = parseFloat(form_data.movieRating);
+			var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 
 			var newIndex = parseInt(index) + 1;
 
@@ -108,7 +107,7 @@ router.post('/', function(req, res, next) {
 	  			rating_difference: difference
 	  		});
 
-	  		var year = form_data.year;
+	  		var year = form_data.year.substring(0, form_data.year.length - 1);
 
 	  		String.prototype.replaceAt=function(index, character) {
 			    return this.substr(0, index) + character + this.substr(index+character.length);
@@ -227,7 +226,6 @@ router.post('/', function(req, res, next) {
 	  		}
 			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
 
-			index++;
 			var movieString = postbody.movieString;
 			var moviesArr = movieString.split(';');
 			var currMovie = moviesArr[index];
@@ -235,7 +233,10 @@ router.post('/', function(req, res, next) {
 			var movieName = movieData[0];
 			var movieRating = movieData[1];
 
-			 request({
+			res.render('findmovie', {'index': form_data.index, 'movieString': form_data.movieString});
+
+
+			 /*request({
 	      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
 	      		method: "GET",
 			}, function(error, response, body) {
@@ -251,7 +252,7 @@ router.post('/', function(req, res, next) {
 				console.log("year in weird place is: " + year_str);
 				
 				res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
-			});
+			});*/
 		});
 
 	} else {
