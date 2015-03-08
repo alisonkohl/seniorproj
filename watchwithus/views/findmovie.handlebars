@@ -44,11 +44,11 @@
 			$("#watchMovieThumbnail").val(thumbnails[index]);
 			$("#watchMovieGenres").val(allGenres[index]);
 
-
-			$("#rateMoviesGenre").val(allGenres[index]);
+			/*$("#rateMoviesGenre").val(allGenres[index]);
 			$("#rateMoviesYear").val(years[index]);
 			$("#rateMovieRating").val(aggregateRatings[index]);
-			$("#rateMovieTitle").val(titles[index]);
+			$("#rateMovieTitle").val(titles[index]);*/
+
 
 			var title = document.createElement("h1");
 			title.id = "title";
@@ -94,10 +94,10 @@
 				$("#watchMovieThumbnail").val(thumbnails[index]);
 				$("#watchMovieGenres").val(allGenres[index]);
 
-				$("#rateMoviesGenre").val(allGenres[index]);
+				/*$("#rateMoviesGenre").val(allGenres[index]);
 				$("#rateMoviesYear").val(years[index]);
 				$("#rateMovieRating").val(aggregateRatings[index]);
-				$("#rateMovieTitle").val(titles[index]);
+				$("#rateMovieTitle").val(titles[index]);*/
 
 				var poster = document.getElementById("poster");
 				poster.src = thumbnails[index];
@@ -113,6 +113,8 @@
 			var poster = document.createElement("img");
 			poster.id = "poster";
 			poster.src = thumbnails[index];
+			console.log(thumbnails[index]);
+			console.log(titles[index]);
 			poster.style.height = '220px';
 			document.getElementById("window").appendChild(poster);
 		</script>
@@ -141,10 +143,10 @@
 				$("#watchMovieThumbnail").val(thumbnails[index]);
 				$("#watchMovieGenres").val(allGenres[index]);
 
-				$("#rateMoviesGenre").val(allGenres[index]);
+				/*$("#rateMoviesGenre").val(allGenres[index]);
 				$("#rateMoviesYear").val(years[index]);
 				$("#rateMovieRating").val(aggregateRatings[index]);
-				$("#rateMovieTitle").val(titles[index]);	
+				$("#rateMovieTitle").val(titles[index]);	*/
 
 				var poster = document.getElementById("poster");
 				poster.src = thumbnails[index];
@@ -163,17 +165,18 @@
 		<span id='star5' class="glyphicon glyphicon-star-empty"></span>
 		<br/>
 		<form id='starForm' action="/findMovie" method="POST" style="display:inline-block;
-    margin:auto;">
-		<div class="form-group">
-			<input type="hidden" name="rating" id="ratingVal"></input>
-			<input type="hidden" name="genreString" id = "rateMoviesGenre"></input>
-			<input type="hidden" name="year" id = "rateMoviesYear"></input>
-			<input type="hidden" name="movieDbRating" id = "rateMovieRating"></input>
-			<input type="hidden" name="title" id="rateMovieTitle"></input>
-			<input type="hidden" name="movieString" id="rateMovieMovieString"></input>
-			<input type="hidden" name="index" id="rateMovieIndex"></input>
-			<input type="hidden" name="rateMovie" value="true"></input>
-		</div>
+    	margin:auto;">
+			<div class="form-group">
+				<input type="hidden" name="rating" id="ratingVal"></input>
+				<input type="hidden" name="genreString" id = "rateMoviesGenre"></input>
+				<input type="hidden" name="year" id = "rateMoviesYear"></input>
+				<input type="hidden" name="movieDbRating" id = "rateMovieRating"></input>
+				<input type="hidden" name="title" id="rateMovieTitle"></input>
+				<input type="hidden" name="movieString" id="rateMovieMovieString" value="{{movieString}}"></input>
+				<input type="hidden" name="index" id="rateMovieIndex"></input>
+				<input type="hidden" name="rateMovie" value="true"></input>
+			</div>
+		</form>
 		<style>
 			.glyphicon {
 				font-size: 40px;
@@ -195,6 +198,10 @@
 				tempIndex++;
 			}
 			$("#rateMovieIndex").val(tempIndex);
+			$("#rateMoviesGenre").val(allGenres[index]);
+			$("#rateMoviesYear").val(years[index]);
+			$("#rateMovieRating").val(aggregateRatings[index]);
+			$("#rateMovieTitle").val(titles[index]);
 			document.getElementById("starForm").submit();
 		});
 		$("#star2").click(function() {
@@ -211,6 +218,10 @@
 				tempIndex++;
 			}
 			$("#rateMovieIndex").val(tempIndex);
+			$("#rateMoviesGenre").val(allGenres[index]);
+			$("#rateMoviesYear").val(years[index]);
+			$("#rateMovieRating").val(aggregateRatings[index]);
+			$("#rateMovieTitle").val(titles[index]);
 			document.getElementById("starForm").submit();
 		});
 		$("#star3").click(function() {
@@ -227,6 +238,10 @@
 				tempIndex++;
 			}
 			$("#rateMovieIndex").val(tempIndex);
+			$("#rateMoviesGenre").val(allGenres[index]);
+			$("#rateMoviesYear").val(years[index]);
+			$("#rateMovieRating").val(aggregateRatings[index]);
+			$("#rateMovieTitle").val(titles[index]);
 			document.getElementById("starForm").submit();
 		});
 		$("#star4").click(function() {
@@ -243,6 +258,10 @@
 				tempIndex++;
 			}
 			$("#rateMovieIndex").val(tempIndex);
+			$("#rateMoviesGenre").val(allGenres[index]);
+			$("#rateMoviesYear").val(years[index]);
+			$("#rateMovieRating").val(aggregateRatings[index]);
+			$("#rateMovieTitle").val(titles[index]);
 			document.getElementById("starForm").submit();
 		});
 		$("#star5").click(function() {
@@ -259,6 +278,10 @@
 				tempIndex++;
 			}
 			$("#rateMovieIndex").val(tempIndex);
+			$("#rateMoviesGenre").val(allGenres[index]);
+			$("#rateMoviesYear").val(years[index]);
+			$("#rateMovieRating").val(aggregateRatings[index]);
+			$("#rateMovieTitle").val(titles[index]);
 			document.getElementById("starForm").submit();
 		});
 	</script>
