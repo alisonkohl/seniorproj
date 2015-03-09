@@ -18,10 +18,19 @@ router.get('/', function(req, res, next) {
 			for (var i = 0; i < userRatings.length; i++) {
 				ratingsArr.push({'title': userRatings[i].title, 'rating': userRatings[i].rating});
 			}
+			ratingsArr.sort(compare);
 			res.render('viewratings', {title: 'View Ratings', 'ratings': ratingsArr});
 		}
 	});
 
 });
+
+function compare(a,b) {
+  if (a.rating < b.rating)
+     return 1;
+  if (a.rating > b.rating)
+    return -1;
+  return 0;
+}
 
 module.exports = router;
