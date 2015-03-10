@@ -343,6 +343,7 @@ router.post('/', function(req, res, next) {
 		  		
 			} else {
 				console.log("Error creating user: ", error);
+				res.render('createAccount', {title: 'Create Account', 'errorMessage': true});
 			}
 		});
 
