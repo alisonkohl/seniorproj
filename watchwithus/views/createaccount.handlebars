@@ -3,7 +3,7 @@
 </center>
 <form style="margin-top: 40px;" action="/onboarding?moviesToRate=10" method="POST">
 	{{#if errorMessage}}
-		<p class = "errorMessage">Could not create account. Please try again.</p>
+		<p class = "errorMessage">{{errorMessage}}</p>
 	{{/if}}
 	<div class="form-group">
 		<label for="nameinput">Username</label>

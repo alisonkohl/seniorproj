@@ -220,135 +220,149 @@ router.post('/', function(req, res, next) {
 
 	} else {
 
-		db.createUser({
-			username: form_data.username,
-			email: form_data.email,
-			password: form_data.password
-		}, function(error) {
-			if (error == null) {
-				console.log("User created successfully");
+		db.orderByChild("users").on("child_added", function(snapshot) {
+			if (snapshot.key() == "users") {
+				var userIds = Object.keys(snapshot.val());
+				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
+				var userData = new Array();
+				for (i = 0; i < arr.length; i++) {
+					userData.push(arr[i].username);
+				}
+				if (userData.indexOf(form_data.username) > -1) {
+					res.render('createAccount', {title: 'Create Account', 'errorMessage': "That username already exists. Please try another."});
+				} else {
+					db.createUser({
+						username: form_data.username,
+						email: form_data.email,
+						password: form_data.password
+					}, function(error) {
+						if (error == null) {
 
-				var index = form_data.index;
-		  		var properIndex = parseInt(index) + 1;
+							console.log("User created successfully");
 
-		  		var id = "";
+							var index = form_data.index;
+					  		var properIndex = parseInt(index) + 1;
 
-		  		db.authWithPassword({
-		  			email    : email,
-					password : password
-				}, function(error, authData) {
-					if (error) {
-						console.log("Login Failed!", error);
-					} else {
-					    console.log("Authenticated successfully with payload:", authData);
-					    remember: "sessionOnly"
-					    id = authData.uid;
+					  		var id = "";
 
-					    console.log("id: " + id);
-		  				/*db.set({
-		  					id: id
-		  				});	*/
+					  		db.authWithPassword({
+					  			email    : email,
+								password : password
+							}, function(error, authData) {
+								if (error) {
+									console.log("Login Failed!", error);
+								} else {
+								    console.log("Authenticated successfully with payload:", authData);
+								    remember: "sessionOnly"
+								    id = authData.uid;
 
-		  				var db2 = db.child("users/" + id);
-		  				db2.set({
-		  					username: form_data.username,
-		  					ratings: {},
-		  					genres: {},
-		  					years: {},
-		  					index: 0,
-		  					moviesRated: 0
-		  				});
+								    console.log("id: " + id);
+					  				/*db.set({
+					  					id: id
+					  				});	*/
 
-		  				/*var db2 = db.child("users/user2");
-		  				db2.set({
-		  					name: form_data.name,
-		  					ratings: {},
-		  					index: -1
-		  				});*/
+					  				var db2 = db.child("users/" + id);
+					  				db2.set({
+					  					username: form_data.username,
+					  					ratings: {},
+					  					genres: {},
+					  					years: {},
+					  					index: 0,
+					  					moviesRated: 0
+					  				});
 
-		  				var db3 = db2.child("genres");
-		  				db3.set({
-		  					16: "0 0 0",
-		  					10751: "0 0 0",
-		  					14: "0 0 0",
-		  					878: "0 0 0",
-		  					35: "0 0 0",
-		  					9648: "0 0 0",
-		  					53: "0 0 0",
-		  					28: "0 0 0",
-		  					12: "0 0 0",
-		  					18: "0 0 0",
-		  					99: "0 0 0",
-		  					10769: "0 0 0",
-		  					27: "0 0 0",
-		  					10402: "0 0 0",
-		  					10749: "0 0 0",
-		  					10770: "0 0 0",
-		  					37: "0 0 0"
-		  				});
+					  				/*var db2 = db.child("users/user2");
+					  				db2.set({
+					  					name: form_data.name,
+					  					ratings: {},
+					  					index: -1
+					  				});*/
 
-		  				var db3 = db2.child("years");
-		  				db3.set({
-		  					1900: "0 0 0",
-		  					1910: "0 0 0",
-		  					1920: "0 0 0",
-		  					1930: "0 0 0",
-		  					1940: "0 0 0",
-		  					1950: "0 0 0",
-		  					1960: "0 0 0",
-		  					1970: "0 0 0",
-		  					1980: "0 0 0",
-		  					1990: "0 0 0",
-		  					2000: "0 0 0",
-		  					2010: "0 0 0"
-		  				});
+					  				var db3 = db2.child("genres");
+					  				db3.set({
+					  					16: "0 0 0",
+					  					10751: "0 0 0",
+					  					14: "0 0 0",
+					  					878: "0 0 0",
+					  					35: "0 0 0",
+					  					9648: "0 0 0",
+					  					53: "0 0 0",
+					  					28: "0 0 0",
+					  					12: "0 0 0",
+					  					18: "0 0 0",
+					  					99: "0 0 0",
+					  					10769: "0 0 0",
+					  					27: "0 0 0",
+					  					10402: "0 0 0",
+					  					10749: "0 0 0",
+					  					10770: "0 0 0",
+					  					37: "0 0 0"
+					  				});
 
-		  				/*var db4 = db2.child("ratings");
-		  				db4.push({
-		  					mid: 8654,
-		  					rating: 4
-		  				});*/
-					}
-		  		});
+					  				var db3 = db2.child("years");
+					  				db3.set({
+					  					1900: "0 0 0",
+					  					1910: "0 0 0",
+					  					1920: "0 0 0",
+					  					1930: "0 0 0",
+					  					1940: "0 0 0",
+					  					1950: "0 0 0",
+					  					1960: "0 0 0",
+					  					1970: "0 0 0",
+					  					1980: "0 0 0",
+					  					1990: "0 0 0",
+					  					2000: "0 0 0",
+					  					2010: "0 0 0"
+					  				});
 
-		  		moviesArray = [];
+					  				/*var db4 = db2.child("ratings");
+					  				db4.push({
+					  					mid: 8654,
+					  					rating: 4
+					  				});*/
+								}
+					  		});
 
-		  		var moviesToRateRef = new Firebase("https://watchwithus.firebaseio.com/moviesToRate");
+					  		moviesArray = [];
 
-		  		var movieId = "";
+					  		var moviesToRateRef = new Firebase("https://watchwithus.firebaseio.com/moviesToRate");
 
-		  		moviesToRateRef.orderByKey().equalTo("0").on("child_added", function(snapshot) {
-		  			movieId = snapshot.val();
-		  			var movieIdValues = movieId.split(' ');
-		  			movieId = movieIdValues[0];
-		  			var movieDbRating = movieIdValues[1];
+					  		var movieId = "";
 
-	  				console.log("movieId: " + movieId);
-					request({
-						uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
-						method: "GET",
-					}, function(error, response, body) {
-						var doc3 = JSON.parse(body);
-						var newTitle = doc3.Title;
-						var newYear = doc3.Year;
-						var synopsis = doc3.Plot;
-						var thumbnail = doc3.Poster;
-						var genres = doc3.Genre;
-						res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
-					});	
-		  		});
+					  		moviesToRateRef.orderByKey().equalTo("0").on("child_added", function(snapshot) {
+					  			movieId = snapshot.val();
+					  			var movieIdValues = movieId.split(' ');
+					  			movieId = movieIdValues[0];
+					  			var movieDbRating = movieIdValues[1];
+
+				  				console.log("movieId: " + movieId);
+								request({
+									uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
+									method: "GET",
+								}, function(error, response, body) {
+									var doc3 = JSON.parse(body);
+									var newTitle = doc3.Title;
+									var newYear = doc3.Year;
+									var synopsis = doc3.Plot;
+									var thumbnail = doc3.Poster;
+									var genres = doc3.Genre;
+									res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
+								});	
+					  		});
 
 
 
-		  		
-			} else {
-				console.log("Error creating user: ", error);
-				res.render('createAccount', {title: 'Create Account', 'errorMessage': true});
+					  		
+						} else {
+							console.log("Error creating user: ", error);
+							res.render('createAccount', {title: 'Create Account', 'errorMessage': "That email address already exists. Please try again."});
+						}
+					});
+				}
+				
 			}
 		});
-
 	}
-
 
 });
 
