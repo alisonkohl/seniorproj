@@ -30,6 +30,26 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/*Randomize the order of the array*/
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 String.prototype.replaceAt=function(index, character) {
 	return this.substr(0, index) + character + this.substr(index+character.length);
 }
@@ -75,25 +95,7 @@ function getQueryArr(g_arr, y_arr) {
 	query_arr.push(query_to_push);
 
 
-	/*Randomize the order of the array*/
-	function shuffle(array) {
-	  var currentIndex = array.length, temporaryValue, randomIndex ;
-
-	  // While there remain elements to shuffle...
-	  while (0 !== currentIndex) {
-
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-
-	    // And swap it with the current element.
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	  }
-
-	  return array;
-	}
+	/*Randomize the order of the query array*/
 	shuffle(query_arr);
 	return query_arr;
 }
@@ -442,16 +444,15 @@ router.post('/', function(req, res, next) {
 
 						/*Split up movieString and save each movie into m_arr[title] -> vote_average*/
 						movieStringArr = movieString.split(';;');
+						shuffle(movieStringArr);
 						var m_arr = {};
 						var num_movies_without_repeats = movieStringArr.length;
-						console.log("num movies is " + num_movies_without_repeats);
 						for (m = 0; m < movieStringArr.length - 1; m++) {
 							var currMovie = movieStringArr[m];
 							var movieData = currMovie.split('*');
 							var movieName = movieData[0];
 							/*Remove repeat movie titles in movieString*/
 							if (m_arr[movieName] != undefined) {
-								console.log("we here");
 								num_movies_without_repeats = num_movies_without_repeats - 1;
 								render_lock_2++;
 								continue;
@@ -547,7 +548,6 @@ router.post('/', function(req, res, next) {
 											//console.log("done");*/
 //**** end part for user rating
 												movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
-												console.log("updated movieStringNew to: " + movieStringNew);
 											}
 										}
 									}
@@ -556,7 +556,6 @@ router.post('/', function(req, res, next) {
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
 										triggered_2 = true;
-										console.log("shit we actually got here and movieString is: " + movieStringNew);
 										res.render('findmovie', {'index': 0, 'movieString': movieStringNew});
 									}
 								}
