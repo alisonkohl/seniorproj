@@ -19,7 +19,19 @@ router.get('/', function(req, res, next) {
 				ratingsArr.push({'title': userRatings[i].title, 'rating': userRatings[i].rating});
 			}
 			ratingsArr.sort(compare);
-			res.render('viewratings', {title: 'View Ratings', 'ratings': ratingsArr});
+
+			var out = [];
+			var len = ratingsArray.length - 1;
+			if (len >= 0) {
+			    for (var i = 0;i < len; i++) {
+			        if (ratingsArray[i].title != ratingsArray[i+1].title) {
+			            out.push (ratingsArray[i]);
+			        }
+			    }
+			    out.push (ratingsArray[len]);
+			}
+
+			res.render('viewratings', {title: 'View Ratings', 'ratings': out});
 		}
 	});
 
