@@ -26,6 +26,78 @@ function post(path, parameters) {
     form.submit();
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+String.prototype.replaceAt=function(index, character) {
+	return this.substr(0, index) + character + this.substr(index+character.length);
+}
+
+/*Use the genre and year preferences to generate the array of movieDB queries*/
+function getQueryArr(g_arr, y_arr) {
+	var query_arr = new Array();
+	for (var g2 in g_arr) {
+		for (var y2 in y_arr) {
+			//so here i want to generate combo queries based on the rating
+			if (g_arr.hasOwnProperty(g2) && y_arr.hasOwnProperty(y2)) {
+				var g_rating_split = g_arr[g2].split(' ');
+				var g_rating = parseFloat(g_rating_split[0]);
+				var y_rating_split = y_arr[y2].split(' ');
+				var y_rating = parseFloat(y_rating_split[0]);
+				if (g_rating == 0 || y_rating == 0) {
+					continue;
+				}
+				var g_y_avg = (g_rating + y_rating) / 2;
+				if (g_y_avg < 0.5) {
+					continue;
+				}
+				var rating_min = 8.0 - g_y_avg;
+
+				var low_year = y2;
+				var high_year = 0;
+				var decade_to_inc = parseInt(low_year[2]);
+
+				if (decade_to_inc != 9) {
+					var decade_incremented = parseInt(low_year[2]) + 1;
+					high_year = low_year.replaceAt(2, decade_incremented.toString());
+				} else {
+					high_year = "2000";
+				}
+				var query_to_push = "with_genres=" + g2 + "&primary_release_date.gte=" + low_year + "-01-01&primary_release_date.lte=" + high_year + "-01-01&vote_average.gte=" + rating_min;
+				query_arr.push(query_to_push);
+			}
+		}
+	}
+
+	/*Push on an additional "catch-all" query*/
+	var query_to_push = "vote_average.gte=7.5";
+	query_arr.push(query_to_push);
+
+
+	/*Randomize the order of the array*/
+	function shuffle(array) {
+	  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+	  // While there remain elements to shuffle...
+	  while (0 !== currentIndex) {
+
+	    // Pick a remaining element...
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex -= 1;
+
+	    // And swap it with the current element.
+	    temporaryValue = array[currentIndex];
+	    array[currentIndex] = array[randomIndex];
+	    array[randomIndex] = temporaryValue;
+	  }
+
+	  return array;
+	}
+	shuffle(query_arr);
+	return query_arr;
+}
+
 router.get('/', function(req, res, next) {
 
 	var authData = db.getAuth();
@@ -55,7 +127,7 @@ router.post('/', function(req, res, next) {
 	var postbody = req.body;
 	var form_data = req.body;
 
-	//Get the group of friends the user is watching with
+	/*Get the group of friends the user is watching with*/
 	var group = postbody.group;
 	console.log("group is: " + group);
 	//watching alone, create new array
@@ -70,38 +142,26 @@ router.post('/', function(req, res, next) {
 	}
 	group.push(uid);
 
-
-	var index = postbody.index;
-	console.log("index at beginning of function is: " + index);
-	var increment = postbody.increment;
-	console.log("index: " + index);
+	/*If rateMovie is true, user is attempting to rate one of the movies they have been recommended*/
 	var rateMovie = postbody.rateMovie;
 	if (rateMovie == "true") {
+		/*Get their rating and movieDB average rating for this movie from form*/
+		var movieTitle = form_data.title.substring(0, form_data.title.length - 1);
+		var rating = parseInt(form_data.rating);
+		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 
 		var authData = db.getAuth();
-		console.log("userId: " + authData.uid);
 		uid = authData.uid;
-
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
-
 		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
-			var index = snapshot.val().index;
-			var moviesRated = snapshot.val().moviesRated;
-			console.log("index: " + index);
-			console.log("moviesRated: " + moviesRated);
-			var movieTitle = form_data.title.substring(0, form_data.title.length - 1);
-			var rating = parseInt(form_data.rating);
-			var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
+			//var index = snapshot.val().index;
+			//var moviesRated = snapshot.val().moviesRated;
 
-			var newIndex = parseInt(index) + 1;
+			//var newIndex = parseInt(index) + 1;
 
 			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-
-			var newMoviesRated;
-			var newMoviesToRate;
 			
 			var difference = rating - movieDbRatingFromForm;
-			newMoviesRated = parseInt(moviesRated) + 1;
 			var ratingsRef = specificUserRef.child("ratings");
 	  		ratingsRef.push({
 	  			title: movieTitle,
@@ -110,17 +170,11 @@ router.post('/', function(req, res, next) {
 	  			rating_difference: difference
 	  		});
 
+
+	  		/*Update the user's average rating for this year range*/
 	  		var year = form_data.year.substring(0, form_data.year.length - 1);
-
 	  		var rounded_year = year.replaceAt(3, "0");
-	  		console.log("rounded year is: " + rounded_year);
-
-
-	  		//switch statement on the years to group into categories, then:
-
-
 	  		var yearsRef = specificUserRef.child("years");
-
   			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
 
   				var currValue = snapshot.val();
@@ -132,20 +186,18 @@ router.post('/', function(req, res, next) {
   				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
   				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
   				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-  				console.log("newRatingString is: " + newRatingString);
   				foo = {};
   				foo[rounded_year] = newRatingString;
   				yearsRef.update(foo);
 
   			});
 
-
+	  		/*Update the user's average rating for these genres*/
 	  		var genresRef = specificUserRef.child("genres");
-	  		//var genreStringFromQuery = query['genreString'];
 	  		var genreStringFromQuery = form_data.genreString;
-	  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
 	  		var genreArray = genreStringFromQuery.split(', ');
 	  		var ids = [];
+	  		/*Convert OMDB genre names to movieDB genre numbers (as stored in Firebase)*/
 	  		for (i = 0; i < genreArray.length; i++) {
 	  			var genreName = genreArray[i];
 	  			console.log("genreName is: " + genreName);
@@ -203,7 +255,7 @@ router.post('/', function(req, res, next) {
 	  					break;
 	  			}
 	  		}
-	  		console.log("ids are " + ids);
+
 	  		for (n = 0; n < ids.length; n++){
 	  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
 
@@ -223,37 +275,17 @@ router.post('/', function(req, res, next) {
 
 	  			});
 	  		}
-			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
 
+			//specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
+
+			/*Send them back to Find Movie recommendations, at the same index*/
 			var movieString = postbody.movieString;
-			var moviesArr = movieString.split(';');
-			var currMovie = moviesArr[index];
-			var movieData = currMovie.split('*');
-			var movieName = movieData[0];
-			var movieRating = movieData[1];
-
 			res.render('findmovie', {'index': form_data.index, 'movieString': form_data.movieString});
-
-
-			 /*request({
-	      		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=v67jb7aug6qwa4hnerpfcykp&q=" + encodeURI(movieName) + "&page_limit=1",
-	      		method: "GET",
-			}, function(error, response, body) {
-				var doc = JSON.parse(body);
-				var title = doc.movies[0].title;
-				var synopsis = doc.movies[0].synopsis;
-				var thumbnail = doc.movies[0].posters.thumbnail.substring(0, doc.movies[0].posters.thumbnail.length-7) + "det.jpg";
-				var audience_score = doc.movies[0].ratings.audience_score;
-				var year = doc.movies[0].year;
-				var movieId = doc.movies[0].id;
-				var uri = "http://image.tmdb.org/t/p/w150" + movieData[2];
-				var year_str = (year).toString();
-				console.log("year in weird place is: " + year_str);
-				
-				res.render('findmovie', {title: 'Find Movie', 'movieRating': movieRating, 'title': title, 'synopsis': synopsis, 'thumbnail': uri, 'audience_score': audience_score, 'year': year_str, 'mid': movieId, 'index': index, 'movieString': movieString});
-			});*/
 		});
 
+
+
+	/*Here, we calculate average ratings between all users for each genre and time period*/
 	} else {
 		var g_arr = {"16": "0 0", "10751": "0 0", "14": "0 0", "878": "0 0", "35": "0 0", "9648": "0 0", "53": "0 0", "28": "0 0", "12": "0 0", "18": "0 0", "99": "0 0", "10769": "0 0", "27": "0 0", "10402": "0 0", "10749": "0 0", "10770": "0 0", "37": "0 0"};
 		var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
@@ -424,9 +456,6 @@ router.post('/', function(req, res, next) {
 									Keep going until all movies in movieString have had additional information added.*/
 									if (render_lock_2 < movieStringArr.length) {
 										if (body != undefined) {
-											//body = body.replace(/"/g, '\\"');
-											//body = body.replace(/\\/g, "\\\\");
-											//console.log("responsebody: " + JSON.stringify(body));
 
 											/*Fix the body for special issues*/
 											var newBody = "{";
@@ -441,8 +470,9 @@ router.post('/', function(req, res, next) {
 												}
 											}
 											newBody += "}";
-											console.log("newBody: " + newBody);
+											//console.log("newBody: " + newBody);
 
+											/*Check to make sure call was not "unauthorized"*/
 											if (newBody[1] != "!") {
 
 												var doc3 = JSON.parse(newBody);
@@ -455,128 +485,57 @@ router.post('/', function(req, res, next) {
 												var writer = doc3.Writer;
 												var actors = doc3.Actors;
 												var thumbnail = doc3.Poster;
-
 												var m_arr_data = m_arr[newTitle];
 
 												/*Add all data on this movie to movieStringNew if the title on omdb matched with tmdb movie title
 												(meaning m_arr_data != undefined)*/
 												if (m_arr_data != undefined) {
 	//********starting here is the part for getting user rating
-												/*var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-												console.log("specificUser2 at bottom is: " + specificUserRef2);
+												//var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+												//var ratingsRef = specificUserRef2.child("ratings");
+													new Firebase("https://watchwithus.firebaseio.com/users/" + uid + "/ratings")
+														.startAt(newTitle)
+														.endAt(newTitle)
+														.once('value', function(snap) {
+															if (snap.val() != undefined) {
+																console.log("it was found and rating is " + snap.val().rating);
+															}
+														});
 
-
-												var ratingsRef = specificUserRef.child("ratings");
 												//console.log("genreRef is: " + genresRef);
 												//var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
-												var m_lock = 0;
-												for (m2 = 0; m2 < movieStringArr.length; m2++) {
-													genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
-														users_rating = snapshot.val();					
-														movieStringArr[m2...
+												//var m_lock = 0;
+												//for (m2 = 0; m2 < movieStringArr.length; m2++) {
+												//	genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
+												//		users_rating = snapshot.val();					
+												//		movieStringArr[m2...
 
-												while (g_lock < all_genres.length) {
-												}
-												console.log("done");*/
+												//while (g_lock < all_genres.length) {
+												//}
+												//console.log("done");*/
 	//**** end part for user rating
 													movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";");
-													console.log("updated movieStringNew to: " + movieStringNew);
+													//console.log("updated movieStringNew to: " + movieStringNew);
 												}
 											}
 										}
-										//could need fencepost here for no ; at final...
 										render_lock_2++;
 									}
 									if (render_lock_2 == movieStringArr.length - 1) {
 										if (triggered_2 == false) {
 											triggered_2 = true;
-											index++;
-											console.log("shit we actually got here and movieString is: " + movieStringNew);
-											res.render('findmovie', {'index': index, 'movieString': movieStringNew});
+											//console.log("shit we actually got here and movieString is: " + movieStringNew);
+											res.render('findmovie', {'index': 0, 'movieString': movieStringNew});
 										}
 									}
 								});
-							}
-
-
-						}
-					}
-				});
-			}		
-		});
-	}
-});
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-String.prototype.replaceAt=function(index, character) {
-	return this.substr(0, index) + character + this.substr(index+character.length);
-}
-
-/*Use the genre and year preferences to generate the array of movieDB queries*/
-function getQueryArr(g_arr, y_arr) {
-	var query_arr = new Array();
-	for (var g2 in g_arr) {
-		for (var y2 in y_arr) {
-			//so here i want to generate combo queries based on the rating
-			if (g_arr.hasOwnProperty(g2) && y_arr.hasOwnProperty(y2)) {
-				var g_rating_split = g_arr[g2].split(' ');
-				var g_rating = parseFloat(g_rating_split[0]);
-				var y_rating_split = y_arr[y2].split(' ');
-				var y_rating = parseFloat(y_rating_split[0]);
-				if (g_rating == 0 || y_rating == 0) {
-					continue;
-				}
-				var g_y_avg = (g_rating + y_rating) / 2;
-				if (g_y_avg < 0.5) {
-					continue;
-				}
-				var rating_min = 8.0 - g_y_avg;
-
-				var low_year = y2;
-				var high_year = 0;
-				var decade_to_inc = parseInt(low_year[2]);
-
-				if (decade_to_inc != 9) {
-					var decade_incremented = parseInt(low_year[2]) + 1;
-					high_year = low_year.replaceAt(2, decade_incremented.toString());
-				} else {
-					high_year = "2000";
-				}
-				var query_to_push = "with_genres=" + g2 + "&primary_release_date.gte=" + low_year + "-01-01&primary_release_date.lte=" + high_year + "-01-01&vote_average.gte=" + rating_min;
-				query_arr.push(query_to_push);
-			}
-		}
-	}
-
-	/*Push on an additional "catch-all" query*/
-	var query_to_push = "vote_average.gte=7.5";
-	query_arr.push(query_to_push);
-
-
-	/*Randomize the order of the array*/
-	function shuffle(array) {
-	  var currentIndex = array.length, temporaryValue, randomIndex ;
-
-	  // While there remain elements to shuffle...
-	  while (0 !== currentIndex) {
-
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-
-	    // And swap it with the current element.
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	  }
-
-	  return array;
-	}
-	shuffle(query_arr);
-	return query_arr;
-}
+							}//ends for loop
+						}//ends if statement
+					}//renderlock = threshold
+				});//end func
+			}//end for (q = 0; q < query_arr.length; q++) {		
+		});//end usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+	}//end else
+});//end post
 
 module.exports = router;
