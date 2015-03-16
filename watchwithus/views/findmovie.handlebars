@@ -35,7 +35,7 @@
 </script>
 
 <center>
-	<div id="window">
+	<div class = "touch" id="window">
 		<!-- <h1 style="margin-top:30px; margin-bottom:30px;">{{title}}</h1> -->
 
 		<!--<a role="button" href="/findmovie" class="btn btn-default" style="float:left; margin-top:80px;">
@@ -57,6 +57,13 @@
 				<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;">
 			</button>
 		</form> -->
+
+		<script>
+			var title = document.createElement("h1");
+			title.id = "title";
+			title.innerHTML = titles[index];
+			document.getElementById("window").appendChild(title);
+		</script>
 
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;" id="leftbutton"></span>
 		<script>
@@ -81,8 +88,6 @@
 				poster.src = thumbnails[index];
 				var title = document.getElementById("title");
 				title.innerHTML = titles[index];
-				var synopsis = document.getElementById("synopsis");
-				synopsis.innerHTML = synopses[index];
 			});
 		</script>
 
@@ -159,8 +164,6 @@
 				poster.src = thumbnails[index];
 				var title = document.getElementById("title");
 				title.innerHTML = titles[index];
-				// var synopsis = document.getElementById("synopsis");
-				// synopsis.innerHTML = synopses[index];
 			});
 		</script>
 		<br/>
@@ -323,16 +326,11 @@
 			$("#rateMovieRating").val(aggregateRatings[index]);
 			$("#rateMovieTitle").val(titles[index]);*/
 
-
-			var title = document.createElement("h1");
-			title.id = "title";
-			title.innerHTML = titles[index];
-			document.getElementById("window").appendChild(title);
-
 			// var synopsis = document.createElement("p");
 			// synopsis.id = "synopsis";
 			// synopsis.innerHTML = synopses[index];
 			// document.getElementById("window").appendChild(synopsis);
 	</script>
-	<script type="text/javascript" src="javascripts/swipe.js"/>
+	<!--<script type="text/javascript" src="javascripts/swipe.js"/>-->
+	<script src="javascripts/bundle.js"></script>
 </center>

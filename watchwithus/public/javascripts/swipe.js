@@ -24,15 +24,68 @@
 //   }
 // });
 
+require('node-touch')();
 
-$(document).on("swipeleft", function() {
+var windowElem = document.getElementById("window");
+
+windowElem.addEventListener('swipeend', function (event) {
+  if (event.direction == "RIGHT") {
+    if (index == sizeOfMoviesArray - 1) {
+          index = 0;
+    } else {
+      index++;
+    }
+    $("#watchMovieRating").val(aggregateRatings[index]);
+    $("#watchMovieYear").val(years[index]);
+    $("#watchMovieTitle").val(titles[index]);
+    $("#watchMovieThumbnail").val(thumbnails[index]);
+    $("#watchMovieGenres").val(allGenres[index]);
+
+    /*$("#rateMoviesGenre").val(allGenres[index]);
+    $("#rateMoviesYear").val(years[index]);
+    $("#rateMovieRating").val(aggregateRatings[index]);
+    $("#rateMovieTitle").val(titles[index]);  */
+
+    var poster = document.getElementById("poster");
+    poster.src = thumbnails[index];
+    var title = document.getElementById("title");
+    title.innerHTML = titles[index];
+
+  }
+  if (event.direction == "LEFT") {
+    if (index == 0) {
+        index = sizeOfMoviesArray - 1;
+    } else {
+      index--;
+    }
+    $("#watchMovieRating").val(aggregateRatings[index]);
+    $("#watchMovieYear").val(years[index]);
+    $("#watchMovieTitle").val(titles[index]);
+    $("#watchMovieThumbnail").val(thumbnails[index]);
+    $("#watchMovieGenres").val(allGenres[index]);
+
+    /*$("#rateMoviesGenre").val(allGenres[index]);
+    $("#rateMoviesYear").val(years[index]);
+    $("#rateMovieRating").val(aggregateRatings[index]);
+    $("#rateMovieTitle").val(titles[index]);*/
+
+    var poster = document.getElementById("poster");
+    poster.src = thumbnails[index];
+    var title = document.getElementById("title");
+    title.innerHTML = titles[index];
+
+  }
+});
+
+
+/*$(document).on("swipeleft", function() {
 	console.log("swiped left document");
 });
 
-$("#window").on("swipeleft", swipeleftHandler);
+$("#window").on("swipeleft", swipeleftHandler);*/
  
   // Callback function references the event target and adds the 'swipeleft' class to it
-function swipeleftHandler( event ){
+/*function swipeleftHandler( event ){
   console.log("swiped left window");
   $.get('/findmovie') {
     window.location.href = '/findmovie';
@@ -47,4 +100,4 @@ function swiperightHandler( event ){
   $.get('/findmovie') {
     window.location.href = '/findmovie';
   }
-}
+}*/
