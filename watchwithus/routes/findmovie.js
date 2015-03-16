@@ -365,176 +365,207 @@ router.post('/', function(req, res, next) {
 				console.log("done");
 
 			}
+		});
 
-			/*Use the genre and year preferences to generate the array of movieDB queries*/
-			var query_arr = getQueryArr(g_arr, y_arr);
+		/*Use the genre and year preferences to generate the array of movieDB queries*/
+		var query_arr = getQueryArr(g_arr, y_arr);
 
-			/*Calculate number of movies to recommend for each genre-year combination*/
-			var num_per = Math.floor(50 / query_arr.length);
-			num_per++;
+		/*Calculate number of movies to recommend for each genre-year combination*/
+		var num_per = Math.floor(50 / query_arr.length);
+		num_per++;
 
-			var movieString = "";
-			//These are locking variables for asynchronous purposes
-			var render_lock = 0;
-			var triggered = false;
-			var render_threshhold = 50;
+		var movieString = "";
+		//These are locking variables for asynchronous purposes
+		var render_lock = 0;
+		var triggered = false;
+		var render_threshhold = 50;
 
-			/*Push the additional catch-all query if the list is too short*/
-			if (query_arr.length <= 2) {
-				var query_to_push = "vote_average.gte=7.5";
-				query_arr.push(query_to_push);
+		/*Push the additional catch-all query if the list is too short*/
+		if (query_arr.length <= 2) {
+			var query_to_push = "vote_average.gte=7.5";
+			query_arr.push(query_to_push);
+		}
+
+		for (q = 0; q < query_arr.length; q++) {
+			to_query = query_arr[q];
+			if (to_query == "vote_average.gte=7.5") {
+
+				/*Pull a random numbered page from the API of movies from this specific genre-year combination*/
+				var random_page_num = getRandomInt(1,13);
+				var random_page = random_page_num.toString();
+				to_query = "vote_average.gte=7.5&page=" + random_page;
 			}
+			request({
+		      		url: "http://api.themoviedb.org/3/discover/movie?" + to_query + "&vote_count.gte=50&api_key=3db59b073812110b693901ba4501b0d2",
+		      		method: "GET",
+			}, function(error, response, body) {
+				/*Increment render_lock each time you add a movie. Keep going until render_lock reaches 50.*/
+				if (render_lock < 50) {
+					var doc = JSON.parse(body);
+					var results = doc.results;
 
-			for (q = 0; q < query_arr.length; q++) {
-				to_query = query_arr[q];
-				if (to_query == "vote_average.gte=7.5") {
-
-					/*Pull a random numbered page from the API of movies from this specific genre-year combination*/
-					var random_page_num = getRandomInt(1,13);
-					var random_page = random_page_num.toString();
-					to_query = "vote_average.gte=7.5&page=" + random_page;
-				}
-				request({
-			      		url: "http://api.themoviedb.org/3/discover/movie?" + to_query + "&vote_count.gte=50&api_key=3db59b073812110b693901ba4501b0d2",
-			      		method: "GET",
-				}, function(error, response, body) {
-					/*Increment render_lock each time you add a movie. Keep going until render_lock reaches 50.*/
-					if (render_lock < 50) {
-						var doc = JSON.parse(body);
-						var results = doc.results;
-
-						/*Make sure we are not trying to pull more than number of results*/
-						var num_per_2 = num_per;
-						if (num_per_2 > results.length) {
-							render_threshhold = render_threshhold - (num_per_2 - results.length);
-							num_per_2 = results.length;
-						}
-
-						if (num_per_2 != 0) {
-							/*Add in vote average from movieDB (fencepost not included)*/
-							for (r = 0; r < num_per_2 - 1; r++) {
-								movieString += (results[r].title + "*" + results[r].vote_average + ";");
-								render_lock++;
-							}
-							/*Fencepost for last result of the last query (don't add a semicolon at end)*/
-							if (q == query_arr.length - 1) {
-								movieString += (results[results.length - 1].title + "*" + results[r].vote_average);
-								render_lock++;
-							/*If not last result of last query, then treat normally*/
-							} else {
-								movieString += (results[results.length - 1].title + "*" + results[r].vote_average + ";");
-								render_lock++;
-							}
-						}
+					/*Make sure we are not trying to pull more than number of results*/
+					var num_per_2 = num_per;
+					if (num_per_2 > results.length) {
+						render_threshhold = render_threshhold - (num_per_2 - results.length);
+						num_per_2 = results.length;
 					}
 
-					/*Continue once render_lock has reached render_threshold (set at 50) */
-					if (render_lock >= render_threshhold) {
-						if (triggered == false) {
-							triggered = true;
+					if (num_per_2 != 0) {
+						/*Add in vote average from movieDB (fencepost not included)*/
+						for (r = 0; r < num_per_2 - 1; r++) {
+							movieString += (results[r].title + "*" + results[r].vote_average + ";;");
+							render_lock++;
+						}
+						/*Fencepost for last result of the last query (don't add a semicolon at end)*/
+						if (q == query_arr.length - 1) {
+							movieString += (results[results.length - 1].title + "*" + results[r].vote_average);
+							render_lock++;
+						/*If not last result of last query, then treat normally*/
+						} else {
+							movieString += (results[results.length - 1].title + "*" + results[r].vote_average + ";;");
+							render_lock++;
+						}
+					}
+				}
 
-							/*Additional set of locking parameters*/
-							var render_lock_2 = 0;
-							var triggered_2 = false;
+				/*Continue once render_lock has reached render_threshold (set at 50) */
+				if (render_lock >= render_threshhold) {
+					if (triggered == false) {
+						triggered = true;
 
-							var movieStringNew = "";
+						/*Additional set of locking parameters*/
+						var render_lock_2 = 0;
+						var triggered_2 = false;
 
-							/*Split up movieString and save each movie into m_arr[title] -> vote_average*/
-							movieStringArr = movieString.split(';');
-							var m_arr = {};
-							for (m = 0; m < movieStringArr.length - 1; m++) {
-								var currMovie = movieStringArr[m];
-								var movieData = currMovie.split('*');
-								var movieName = movieData[0];
-								m_arr[movieName] = movieData[1];
+						var movieStringNew = "";
 
-								request({
-						      		uri: "http://www.omdbapi.com/?t=" + encodeURI(movieName) + "&y=&plot=short&r=json",
-						      		method: "GET",
-								}, function(error, response, body) {
-									/*Increment render_lock_2 each time you add the additional information to a movie.
-									Keep going until all movies in movieString have had additional information added.*/
-									if (render_lock_2 < movieStringArr.length) {
-										if (body != undefined) {
+						/*Split up movieString and save each movie into m_arr[title] -> vote_average*/
+						movieStringArr = movieString.split(';;');
+						var m_arr = {};
+						var num_movies_without_repeats = movieStringArr.length;
+						console.log("num movies is " + num_movies_without_repeats);
+						for (m = 0; m < movieStringArr.length - 1; m++) {
+							var currMovie = movieStringArr[m];
+							var movieData = currMovie.split('*');
+							var movieName = movieData[0];
+							/*Remove repeat movie titles in movieString*/
+							if (m_arr[movieName] != undefined) {
+								console.log("we here");
+								num_movies_without_repeats = num_movies_without_repeats - 1;
+								render_lock_2++;
+								continue;
+							}
+							m_arr[movieName] = movieData[1];
 
-											/*Fix the body for special issues*/
-											var newBody = "{";
-											for (var a = 1; a < body.length - 1; a++) {
-												var currChar = body.charAt(a);
-												var nextChar = body.charAt(a + 1);
-												var prevChar = body.charAt(a - 1);
-												if (currChar == '"' && (prevChar != '{' && nextChar != ':' && prevChar != ':' && nextChar != ',' && prevChar != ',' && nextChar != '}')) {
-													newBody += '\"';
-												} else {
-													newBody += currChar;
-												}
+							request({
+					      		uri: "http://www.omdbapi.com/?t=" + encodeURI(movieName) + "&y=&plot=short&r=json",
+					      		method: "GET",
+							}, function(error, response, body) {
+								/*Increment render_lock_2 each time you add the additional information to a movie.
+								Keep going until all movies have had additional information added.*/
+								console.log("num down is: " + num_movies_without_repeats);
+								console.log("render lock is: " + render_lock_2);
+								if (render_lock_2 < num_movies_without_repeats) {
+									if (body != undefined) {
+										/*Fix the body for special issues*/
+										var newBody = "{";
+										for (var a = 1; a < body.length - 1; a++) {
+											var currChar = body.charAt(a);
+											var nextChar = body.charAt(a + 1);
+											var prevChar = body.charAt(a - 1);
+											if (currChar == '"' && (prevChar != '{' && nextChar != ':' && prevChar != ':' && nextChar != ',' && prevChar != ',' && nextChar != '}')) {
+												newBody += '\"';
+											} else {
+												newBody += currChar;
 											}
-											newBody += "}";
-											//console.log("newBody: " + newBody);
+										}
+										newBody += "}";
+										//console.log("newBody: " + newBody);
 
-											/*Check to make sure call was not "unauthorized"*/
-											if (newBody[1] != "!") {
+										/*Check to make sure call was not "unauthorized"*/
+										if (newBody[1] != "!") {
 
-												var doc3 = JSON.parse(newBody);
-												var newTitle = doc3.Title;
-												var newYear = doc3.Year;
-												var runtime = doc3.Runtime;
-												var genres = doc3.Genre;
-												var synopsis = doc3.Plot;
-												var director = doc3.Director;
-												var writer = doc3.Writer;
-												var actors = doc3.Actors;
-												var thumbnail = doc3.Poster;
-												var m_arr_data = m_arr[newTitle];
+											var doc3 = JSON.parse(newBody);
+											var newTitle = doc3.Title;
+											var newYear = doc3.Year;
+											var runtime = doc3.Runtime;
+											var genres = doc3.Genre;
+											var synopsis = doc3.Plot;
+											var director = doc3.Director;
+											var writer = doc3.Writer;
+											var actors = doc3.Actors;
+											var thumbnail = doc3.Poster;
+											var m_arr_data = m_arr[newTitle];
 
-												/*Add all data on this movie to movieStringNew if the title on omdb matched with tmdb movie title
-												(meaning m_arr_data != undefined)*/
-												if (m_arr_data != undefined) {
-	//********starting here is the part for getting user rating
-												//var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-												//var ratingsRef = specificUserRef2.child("ratings");
-													new Firebase("https://watchwithus.firebaseio.com/users/" + uid + "/ratings")
-														.startAt(newTitle)
+											/*Add all data on this movie to movieStringNew if the title on omdb matched with tmdb movie title
+											(meaning m_arr_data != undefined)*/
+											if (m_arr_data != undefined) {
+//********starting here is the part for getting user rating
+											//var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+											//var ratingsRef = specificUserRef2.child("ratings");
+
+											/*
+												new Firebase("https://watchwithus.firebaseio.com/users/simplelogin%3A" + uid.substring(14))
+													.startAt(newTitle)
+													.endAt(newTitle)
+													.once('value', function(snap) {
+														console.log("title is: " + newTitle);
+														console.log("val is: " + snap.val());
+														if (snap.val() != undefined) {
+															console.log("it was found and rating is " + snap.val().rating);
+														}
+													});
+													*/
+
+												/*var usersRef2 = new Firebase("https://watchwithus.firebaseio.com/users");
+												usersRef2.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+													user_fb = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+													var ratings_fb = user_fb.child("ratings");
+													console.log(ratings_fb);
+													ratings_fb.startAt(newTitle)
 														.endAt(newTitle)
 														.once('value', function(snap) {
+															console.log("title is: " + newTitle);
+															console.log("val is: " + snap.val());
 															if (snap.val() != undefined) {
 																console.log("it was found and rating is " + snap.val().rating);
 															}
 														});
+												});*/
 
-												//console.log("genreRef is: " + genresRef);
-												//var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
-												//var m_lock = 0;
-												//for (m2 = 0; m2 < movieStringArr.length; m2++) {
-												//	genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
-												//		users_rating = snapshot.val();					
-												//		movieStringArr[m2...
+											//console.log("genreRef is: " + genresRef);
+											//var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
+											//var m_lock = 0;
+											//for (m2 = 0; m2 < movieStringArr.length; m2++) {
+											//	genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
+											//		users_rating = snapshot.val();					
+											//		movieStringArr[m2...
 
-												//while (g_lock < all_genres.length) {
-												//}
-												//console.log("done");*/
-	//**** end part for user rating
-													movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";");
-													//console.log("updated movieStringNew to: " + movieStringNew);
-												}
+											//while (g_lock < all_genres.length) {
+											//}
+											//console.log("done");*/
+//**** end part for user rating
+												movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
+												console.log("updated movieStringNew to: " + movieStringNew);
 											}
 										}
-										render_lock_2++;
 									}
-									if (render_lock_2 == movieStringArr.length - 1) {
-										if (triggered_2 == false) {
-											triggered_2 = true;
-											//console.log("shit we actually got here and movieString is: " + movieStringNew);
-											res.render('findmovie', {'index': 0, 'movieString': movieStringNew});
-										}
+									render_lock_2++;
+								}
+								if (render_lock_2 == num_movies_without_repeats - 1) {
+									if (triggered_2 == false) {
+										triggered_2 = true;
+										console.log("shit we actually got here and movieString is: " + movieStringNew);
+										res.render('findmovie', {'index': 0, 'movieString': movieStringNew});
 									}
-								});
-							}//ends for loop
-						}//ends if statement
-					}//renderlock = threshold
-				});//end func
-			}//end for (q = 0; q < query_arr.length; q++) {		
-		});//end usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+								}
+							});
+						}//ends for loop
+					}//ends if statement
+				}//renderlock = threshold
+			});//end func
+		}//end for (q = 0; q < query_arr.length; q++) {		
 	}//end else
 });//end post
 
