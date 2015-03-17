@@ -268,7 +268,8 @@ router.post('/', function(req, res, next) {
 					  					genres: {},
 					  					years: {},
 					  					index: 0,
-					  					moviesRated: 0
+					  					moviesRated: 0,
+					  					recentFriends: "sample"
 					  				});
 
 					  				/*var db2 = db.child("users/user2");

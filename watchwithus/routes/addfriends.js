@@ -21,13 +21,41 @@ router.post('/', function(req, res, next) {
 	var friendsAdded = form_data.friendsAdded;
 
 	if (query == "") {
-		//usersRef.orderByChild
-		db.orderByChild("users").on("child_added", function(snapshot) {
-			console.log(snapshot.key());
+		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+
+		usersRef.orderByKey().on("child_added", function(snapshot) {
+			var recentFriendIds = "";
+			if (snapshot.key() == "recentFriends") {
+				recentFriendIds = snapshot.val();
+			
+				recentFriendIdsArr = recentFriendIds.split(";");
+
+				db.orderByChild("users").on("child_added", function(snapshot) {
+					if (snapshot.key() == "users") {
+						var userIds = Object.keys(snapshot.val());
+						var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
+						var userData = new Array();
+						var recentFriends = new Array();
+						for (i = 0; i < arr.length; i++) {
+							if (userIds[i] != uid) {
+								if (recentFriendIdsArr.indexOf(userIds[i]) > -1) {
+									recentFriends.push({'id': userIds[i], 'username': arr[i].username});
+								} else {
+									userData.push({'id': userIds[i], 'username': arr[i].username});
+								}
+							}
+						}
+						res.render('addfriends', {title: 'Add Friends', 'users': userData, 'recentFriends': recentFriends});
+					}
+				});
+			}
+		});
+
+
+
+		/*db.orderByChild("users").on("child_added", function(snapshot) {
 			if (snapshot.key() == "users") {
 				var userIds = Object.keys(snapshot.val());
-				//console.log(snapshot.val());
-				//console.log(Object.keys(snapshot.val()));
 				var arr = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
 				var userData = new Array();
 				for (i = 0; i < arr.length; i++) {
@@ -37,40 +65,8 @@ router.post('/', function(req, res, next) {
 				}
 				res.render('addfriends', {title: 'Add Friends', 'users': userData});
 			}
-		});
+		});*/
 	}
-
-
-	/*usersRef.orderByChild("name").startAt("Ja").endAt("Ja~").on("child_added", function(snapshot) {
-
-		counter++;
-		allUsers += (snapshot.val().name + ",");
-		console.log(snapshot.val().name);
-		console.log(snapshot.val());
-
-		if (counter == 5) {
-			res.render('addfriends', {title: 'Add Friends', 'allUsers': allUsers});
-		}
-
-
-
-	});*/
-
-	//var movieId = "9559";
-
-	/*request({
-		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
-		method: "GET",
-	}, function(error, response, body) {
-		var doc = JSON.parse(body);
-		var title = doc.title;
-		var synopsis = doc.synopsis;
-		var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
-		var audience_score = doc.ratings.audience_score;
-							
-		res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'mid': movieId});
-						
-	});*/
 });
 
 module.exports = router;

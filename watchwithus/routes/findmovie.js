@@ -124,6 +124,12 @@ router.post('/', function(req, res, next) {
 	}
 	group.push(uid);
 
+	var friendsString = "";
+	for (var z = 0; z < group.length; z++) {
+		friendsString += group[z] + ";";
+	}
+	friendsString = friendsString.substring(0, friendsString.length - 1);
+
 	/*If rateMovie is true, user is attempting to rate one of the movies they have been recommended*/
 	var rateMovie = postbody.rateMovie;
 	if (rateMovie == "true") {
@@ -131,6 +137,7 @@ router.post('/', function(req, res, next) {
 		var movieTitle = form_data.title.substring(0, form_data.title.length - 1);
 		var rating = parseInt(form_data.rating);
 		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
+		var recentFriendsString = form_data.recentFriends;
 
 		/*Upload to Firebase their rating (in difference) for that movie, and average rating for year and genre ranges*/
 		var authData = db.getAuth();
@@ -263,7 +270,7 @@ router.post('/', function(req, res, next) {
 				var end_index = movieString.indexOf(";;", movieIndexInString);
 				movieString = movieString.substring(0, movieIndexInString) + movieString.substring(end_index + 2);
 			}
-			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': 1});
+			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': 1, 'recentFriends': recentFriendsString});
 		});
 
 
@@ -527,7 +534,7 @@ router.post('/', function(req, res, next) {
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
 										triggered_2 = true;
-										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': 0});
+										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': 0, 'recentFriends': friendsString});
 									}
 								}
 							});

@@ -323,7 +323,7 @@ router.post('/', function(req, res, next) {
 
 	  			});
 	  		}
-			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
+			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated, recentFriends: form_data.recentFriends});
 
 			res.render('mainmenu', {title: 'Main Menu'});
 		});
