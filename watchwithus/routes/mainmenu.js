@@ -171,141 +171,85 @@ router.post('/', function(req, res, next) {
 
 	var email = form_data.email;
 	var password = form_data.password;
-
-	if (email == undefined) {
+	var fromViewRatings = form_data.fromViewRatings;
+	if (fromViewRatings == "true") {
 
 		var authData = db.getAuth();
-		console.log("userId: " + authData.uid);
-		uid = authData.uid;
+		var uid = authData.uid;
+		var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+		var ratingsRef = specificUserRef.child("ratings");
 
-		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
-
-		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
-			var index = snapshot.val().index;
-			var moviesRated = snapshot.val().moviesRated;
-			console.log("index: " + index);
-			console.log("moviesRated: " + moviesRated);
-			var movieTitle = form_data.title;
-			var rating = parseInt(form_data.rating);
-			var movieDbRatingFromForm = parseFloat(form_data.movieRating);
-
-			var newIndex = parseInt(index) + 1;
-
-			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-
-			var newMoviesRated;
-			var newMoviesToRate;
-			
-			var difference = rating - movieDbRatingFromForm;
-			newMoviesRated = parseInt(moviesRated) + 1;
-			var ratingsRef = specificUserRef.child("ratings");
-	  		ratingsRef.push({
-	  			title: movieTitle,
-	  			rating: rating,
-	  			average_rating_from_movie_db: movieDbRatingFromForm,
-	  			rating_difference: difference
-	  		});
-
-	  		var year = form_data.year;
-
-	  		String.prototype.replaceAt=function(index, character) {
-			    return this.substr(0, index) + character + this.substr(index+character.length);
+		var numMovies = form_data.numMovies;
+		for (var i = 0; i < numMovies; i++) {
+			var titleString = "title" + i;
+			var currTitle = form_data["title" + i];
+			var currRating = form_data["rating" + i];
+			if (currRating > 0) {
+ 				ratingsRef.orderByChild("child").on("child_added", function(snapshot) {
+ 					specificMovieRef = ratingsRef.child(snapshot.key());
+ 					specificMovieRef.orderByKey().on("child_added", function(snapshot2) {
+ 						console.log(snapshot2.key() + ": " + snapshot2.val());
+ 						if (snapshot2.val() == currTitle) {
+ 							console.log("here");
+ 							specificMovieRef.update({rating: currRating});
+ 						}
+ 					});
+ 				});
 			}
+		}
+		res.render('mainmenu', {title: 'Main Menu'});
 
-	  		var rounded_year = year.replaceAt(3, "0");
-	  		console.log("rounded year is: " + rounded_year);
+	} else {
+		if (email == undefined) {
+
+			var authData = db.getAuth();
+			console.log("userId: " + authData.uid);
+			uid = authData.uid;
+
+			var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+
+			usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+				var index = snapshot.val().index;
+				var moviesRated = snapshot.val().moviesRated;
+				console.log("index: " + index);
+				console.log("moviesRated: " + moviesRated);
+				var movieTitle = form_data.title;
+				var rating = parseInt(form_data.rating);
+				var movieDbRatingFromForm = parseFloat(form_data.movieRating);
+
+				var newIndex = parseInt(index) + 1;
+
+				var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+
+				var newMoviesRated;
+				var newMoviesToRate;
+				
+				var difference = rating - movieDbRatingFromForm;
+				newMoviesRated = parseInt(moviesRated) + 1;
+				var ratingsRef = specificUserRef.child("ratings");
+		  		ratingsRef.push({
+		  			title: movieTitle,
+		  			rating: rating,
+		  			average_rating_from_movie_db: movieDbRatingFromForm,
+		  			rating_difference: difference
+		  		});
+
+		  		var year = form_data.year;
+
+		  		String.prototype.replaceAt=function(index, character) {
+				    return this.substr(0, index) + character + this.substr(index+character.length);
+				}
+
+		  		var rounded_year = year.replaceAt(3, "0");
+		  		console.log("rounded year is: " + rounded_year);
 
 
-	  		//switch statement on the years to group into categories, then:
+		  		//switch statement on the years to group into categories, then:
 
 
-	  		var yearsRef = specificUserRef.child("years");
+		  		var yearsRef = specificUserRef.child("years");
 
-  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
-
-  				var currValue = snapshot.val();
-  				var ratingAndCount = currValue.split(' ');
-  				var currRating = parseFloat(ratingAndCount[0]);
-  				var currDiff = parseFloat(ratingAndCount[1]);
-  				var currCount = parseFloat(ratingAndCount[2]);
-
-  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
-  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
-  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-  				console.log("newRatingString is: " + newRatingString);
-  				foo = {};
-  				foo[rounded_year] = newRatingString;
-  				yearsRef.update(foo);
-
-  			});
-
-
-	  		var genresRef = specificUserRef.child("genres");
-	  		//var genreStringFromQuery = query['genreString'];
-	  		var genreStringFromQuery = form_data.genreString;
-	  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
-	  		var genreArray = genreStringFromQuery.split(', ');
-	  		var ids = [];
-	  		for (i = 0; i < genreArray.length; i++) {
-	  			var genreName = genreArray[i];
-	  			console.log("genreName is: " + genreName);
-	  			switch(genreName) {
-	  				case "Animation":
-	  					ids.push("16");
-	  					break;
-	  				case "Sci-Fi":
-	  					ids.push("878");
-	  					break;
-	  				case "Fantasy":
-	  					ids.push("14");
-	  					break;
-	  				case "Comedy": 
-	  					ids.push("35");
-	  					break;
-	  				case "Mystery":
-	  					ids.push("9648");
-	  					break;
-	  				case "Action":
-	  					ids.push("28");
-	  					break;
-	  				case "Adventure":
-	  					ids.push("12");
-	  					break;
-	  				case "Drama":
-	  					ids.push("18");
-	  					break;
-	  				case "Documentary":
-	  					ids.push("99");
-	  					break;
-	  				case "Horror":
-	  					ids.push("27");
-	  					break;
-	  				case "Musical":
-	  					ids.push("10402");
-	  					break;
-	  				case "Romance":
-	  					ids.push("10749");
-	  					break;
-	  				case "Western":
-	  					ids.push("37");
-	  					break;
-	  				case "Thriller":
-	  					ids.push("53");
-	  					break;
-	  				case "Crime":
-	  					ids.push("80");
-	  					break;
-	  				case "War":
-	  					ids.push("10752");
-	  					break;
-	  				case "Family":
-	  					ids.push("10751");
-	  					break;
-	  			}
-	  		}
-	  		console.log("ids are " + ids);
-	  		for (n = 0; n < ids.length; n++){
-	  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
+	  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
 
 	  				var currValue = snapshot.val();
 	  				var ratingAndCount = currValue.split(' ');
@@ -318,28 +262,126 @@ router.post('/', function(req, res, next) {
 	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
 	  				console.log("newRatingString is: " + newRatingString);
 	  				foo = {};
-	  				foo[ids[n]] = newRatingString;
-	  				genresRef.update(foo);
+	  				foo[rounded_year] = newRatingString;
+	  				yearsRef.update(foo);
 
 	  			});
-	  		}
-			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated, recentFriends: form_data.recentFriends});
 
-			res.render('mainmenu', {title: 'Main Menu'});
-		});
-	}
-	else {
-		db.authWithPassword({
-			email    : email,
-			password : password
-		}, function(error, authData) {
-		  	if (error) {
-		    	res.render('login', {title: 'Login', 'errorMessage': true});
- 			} else {
- 				res.render('mainmenu', {title: 'Main Menu'});
- 			}
-		});
-	}
+
+		  		var genresRef = specificUserRef.child("genres");
+		  		//var genreStringFromQuery = query['genreString'];
+		  		var genreStringFromQuery = form_data.genreString;
+		  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
+		  		var genreArray = genreStringFromQuery.split(', ');
+		  		var ids = [];
+		  		for (i = 0; i < genreArray.length; i++) {
+		  			var genreName = genreArray[i];
+		  			console.log("genreName is: " + genreName);
+		  			switch(genreName) {
+		  				case "Animation":
+		  					ids.push("16");
+		  					break;
+		  				case "Sci-Fi":
+		  					ids.push("878");
+		  					break;
+		  				case "Fantasy":
+		  					ids.push("14");
+		  					break;
+		  				case "Comedy": 
+		  					ids.push("35");
+		  					break;
+		  				case "Mystery":
+		  					ids.push("9648");
+		  					break;
+		  				case "Action":
+		  					ids.push("28");
+		  					break;
+		  				case "Adventure":
+		  					ids.push("12");
+		  					break;
+		  				case "Drama":
+		  					ids.push("18");
+		  					break;
+		  				case "Documentary":
+		  					ids.push("99");
+		  					break;
+		  				case "Horror":
+		  					ids.push("27");
+		  					break;
+		  				case "Musical":
+		  					ids.push("10402");
+		  					break;
+		  				case "Romance":
+		  					ids.push("10749");
+		  					break;
+		  				case "Western":
+		  					ids.push("37");
+		  					break;
+		  				case "Thriller":
+		  					ids.push("53");
+		  					break;
+		  				case "Crime":
+		  					ids.push("80");
+		  					break;
+		  				case "War":
+		  					ids.push("10752");
+		  					break;
+		  				case "Family":
+		  					ids.push("10751");
+		  					break;
+		  			}
+		  		}
+		  		console.log("ids are " + ids);
+		  		for (n = 0; n < ids.length; n++){
+		  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
+
+		  				var currValue = snapshot.val();
+		  				var ratingAndCount = currValue.split(' ');
+		  				var currRating = parseFloat(ratingAndCount[0]);
+		  				var currDiff = parseFloat(ratingAndCount[1]);
+		  				var currCount = parseFloat(ratingAndCount[2]);
+
+		  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+		  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+		  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
+		  				console.log("newRatingString is: " + newRatingString);
+		  				foo = {};
+		  				foo[ids[n]] = newRatingString;
+		  				genresRef.update(foo);
+
+		  			});
+		  		}
+				specificUserRef.update({index: newIndex, moviesRated: newMoviesRated, recentFriends: form_data.recentFriends});
+
+				res.render('mainmenu', {title: 'Main Menu'});
+			});
+		}
+		else {
+			db.authWithPassword({
+				email    : email,
+				password : password
+			}, function(error, authData) {
+			  	if (error) {
+			    	res.render('login', {title: 'Login', 'errorMessage': true});
+	 			} else {
+	 				var uid = authData.uid;
+	 				var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+	 				var ratingsRef = specificUserRef.child("ratings");
+	 				ratingsRef.orderByChild("child").on("child_added", function(snapshot) {
+	 					specificMovieRef = ratingsRef.child(snapshot.key());
+	 					specificMovieRef.orderByKey().on("child_added", function(snapshot2) {
+	 						console.log(snapshot2.key() + ": " + snapshot2.val());
+	 						if (snapshot2.val() == "The Blue Umbrell") {
+	 							console.log("here");
+	 							specificMovieRef.update({rating: 5});
+	 						}
+	 					});
+	 				});
+	 				res.render('mainmenu', {title: 'Main Menu'});
+	 			}
+			});
+		}
+	}	
 });
 
 module.exports = router;
