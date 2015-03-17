@@ -50,6 +50,8 @@ windowElem.addEventListener('swipeend', function (event) {
     poster.src = thumbnails[index];
     var title = document.getElementById("title");
     title.innerHTML = titles[index];
+    var thanksForRatingElem = document.getElementById("thanksForRating");
+    thanksForRatingElem.style.visibility = "hidden";
 
   }
   if (event.direction == "LEFT") {
@@ -73,7 +75,8 @@ windowElem.addEventListener('swipeend', function (event) {
     poster.src = thumbnails[index];
     var title = document.getElementById("title");
     title.innerHTML = titles[index];
-
+    var thanksForRatingElem = document.getElementById("thanksForRating");
+    thanksForRatingElem.style.visibility = "hidden";
   }
 });
 

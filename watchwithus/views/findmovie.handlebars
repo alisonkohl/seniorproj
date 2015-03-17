@@ -57,7 +57,11 @@
 				<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;">
 			</button>
 		</form> -->
-
+		{{#if justrated}}
+			<p id = "thanksForRating">Thanks for rating!</p>
+		{{else}}
+			<p id = "thanksForRating" style="visibility: hidden">Thanks for rating!</p>
+		{{/if}}
 		<script>
 			var title = document.createElement("h1");
 			title.id = "title";
