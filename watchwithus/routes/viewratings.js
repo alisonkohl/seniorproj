@@ -18,31 +18,50 @@ router.get('/', function(req, res, next) {
 			for (var i = 0; i < userRatings.length; i++) {
 				ratingsArr.push({'title': userRatings[i].title, 'rating': userRatings[i].rating});
 			}
-			ratingsArr.sort(compare);
+			ratingsArr.sort(compareByRating);
 
-			var out = [];
-			var len = ratingsArray.length - 1;
+			var outByRating = [];
+			var len = ratingsArr.length - 1;
 			if (len >= 0) {
 			    for (var i = 0;i < len; i++) {
-			        if (ratingsArray[i].title != ratingsArray[i+1].title) {
-			            out.push (ratingsArray[i]);
+			        if (ratingsArr[i].title != ratingsArr[i+1].title) {
+			            outByRating.push (ratingsArr[i]);
 			        }
 			    }
-			    out.push (ratingsArray[len]);
+			    outByRating.push (ratingsArr[len]);
 			}
 
-			res.render('viewratings', {title: 'View Ratings', 'ratings': out});
+			ratingsArr.sort(alphabetize);
+
+			var outAlphabetized = [];
+			var len = ratingsArr.length - 1;
+			if (len >= 0) {
+			    for (var i = 0;i < len; i++) {
+			        if (ratingsArr[i].title != ratingsArr[i+1].title) {
+			            outAlphabetized.push (ratingsArr[i]);
+			        }
+			    }
+			    outAlphabetized.push (ratingsArr[len]);
+			}
+
+			res.render('viewratings', {title: 'View Ratings', 'ratings': outAlphabetized});
 		}
 	});
 
 });
 
-function compare(a,b) {
+function compareByRating(a,b) {
   if (a.rating < b.rating)
      return 1;
   if (a.rating > b.rating)
     return -1;
   return 0;
+}
+
+function alphabetize(a,b) {
+	if (a.title < b.title) return -1;
+	if (a.title > b.title) return 1;
+	return 0;
 }
 
 module.exports = router;
