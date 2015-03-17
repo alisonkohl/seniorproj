@@ -49,7 +49,7 @@ router.post('/', function(req, res, next) {
 		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.email, 'message': "Successfully changed email address!" });
 		  } else {
 		    console.log("Error changing email:", error);
-		   	res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.oldEmail, 'message': "Could not change email address. Please try again." });
+		   	res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.oldEmail, 'message': "Error changing email: " + error) });
 		  }
 		});
 	}
