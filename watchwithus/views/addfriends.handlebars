@@ -1,24 +1,50 @@
+<script type="text/javascript" src="javascripts/spin.js"></script>
 <center>
 	<h1>Who are you watching with?</h1>
 	<p>Search for your friends by username:</p>
 	<select class="js-example-basic-multiple" name="group" form="friendsform" multiple="multiple" style="width: 90%">
-		{{#each users}}
-			<option value={{id}}>{{username}}</option>
-		{{/each}}
+		<optgroup label="Recent Friends">
+			{{#each recentFriends}}
+				<option value={{id}}>{{username}}</option>
+			{{/each}}
+		</optgroup>
+		<optgroup label="Other Users">
+			{{#each users}}
+				<option value={{id}}>{{username}}</option>
+			{{/each}}
+		</optgroup>
 	</select>
 	<form id="friendsform" style="margin-top: 40px;" action="/findmovie" method="POST" onclick="showLoading()">
 		<input type="hidden" value=-1 name="index"/>
-		<center><button type="submit" class="btn btn-default">Let's Go!</button></center>
+		<center><button type="submit" class="btn btn-default" id="submitButton">Let's Go!</button></center>
 	</form>
+	<div id="load"></div>
 	<script>
 		$(".js-example-basic-multiple").select2();
 	</script>
-	<div id="load" style="visibility: hidden"><img src="http://jimpunk.net/Loading/wp-content/uploads/loading1.gif"/></div>
 </center>
 
 <script>
-	showLoading = function() {
-		var loadingThing = document.getElementById("load");
-		loadingThing.style.visibility = "visible";
-	}
+	$("#submitButton").click(function() {
+		var opts = {
+		  lines: 11, // The number of lines to draw
+		  length: 0, // The length of each line
+		  width: 17, // The line thickness
+		  radius: 40, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 31, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#000', // #rgb or #rrggbb or array of colors
+		  speed: 1, // Rounds per second
+		  trail: 71, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '65%', // Top position relative to parent
+		  left: '50%' // Left position relative to parent
+		};
+		var target = document.getElementById('load');
+		var spinner = new Spinner(opts).spin(target);
+	});
 </script>
