@@ -101,6 +101,7 @@ function getQueryArr(g_arr, y_arr) {
 }
 
 router.get('/', function(req, res, next) {
+	res.render('index', {title: 'Watch With Us'});
 });
 
 router.post('/', function(req, res, next) {
@@ -270,7 +271,7 @@ router.post('/', function(req, res, next) {
 				var end_index = movieString.indexOf(";;", movieIndexInString);
 				movieString = movieString.substring(0, movieIndexInString) + movieString.substring(end_index + 2);
 			}
-			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': 1, 'recentFriends': recentFriendsString});
+			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': true, 'recentFriends': recentFriendsString});
 		});
 
 
@@ -534,7 +535,7 @@ router.post('/', function(req, res, next) {
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
 										triggered_2 = true;
-										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': 0, 'recentFriends': friendsString});
+										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': false, 'recentFriends': friendsString});
 									}
 								}
 							});

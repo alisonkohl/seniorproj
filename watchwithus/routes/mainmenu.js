@@ -6,7 +6,7 @@ var request = require("request");
 var g_sort = new Array();
 
 router.get('/', function(req, res, next) {
-	res.render('mainmenu', {title: 'Main Menu'});
+	res.render('index', {title: 'Watch With Us'});
 });
 
 router.post('/', function(req, res, next) {

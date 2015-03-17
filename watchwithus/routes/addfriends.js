@@ -4,6 +4,10 @@ var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require('request');
 
+router.get('/', function(req, res, next){
+	res.render('index', {title: 'Watch With Us'});
+});
+
 router.post('/', function(req, res, next) {
 
 	var authData = db.getAuth();
