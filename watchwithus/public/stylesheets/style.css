@@ -108,6 +108,12 @@ fieldset[disabled] .btn-default.active {
 	font-size:27px;
 }
 
+.logout {
+	font-size:18px;
+	float:right;
+	margin-right:5px;
+}
+
 .navbar-default .navbar-brand {
   color: #ffffff;
 }

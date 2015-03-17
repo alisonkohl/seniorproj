@@ -1,0 +1,22 @@
+<center>
+	<h1>Account</h1>
+	<h3>Logged in as {{username}}</h3>
+	<br/>
+	<form action='/accountpage' method='POST'>
+		<div id="emailDiv">
+			<input type="hidden" name="emailChanged" id="emailChanged" value="false"/>
+			<input type="text" name="email" id="email" value="{{email}}" disabled/>
+			<button type="button" class="btn btn-default" id="editEmail">Edit Email</button>
+			<button type="submit" id="emailSubmit" class="btn btn-default" style="display:none;"> Email</button>
+			<script>
+				$("#editEmail").click(function() {
+					$("#email").removeAttr("disabled");
+					$("#editEmail").setAttr("display", "none");
+					$("#emailChanged").val("true");
+				})
+			</script>
+		</div>
+		<input type="hidden" name="passwordChanged" id="passwordChanged" value="false"/>
+	</form>
+	<a href="/createaccount" class="btn btn-default btn-lg" role="button">Logout</a>
+</center>
