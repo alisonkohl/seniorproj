@@ -63,7 +63,6 @@ router.post('/', function(req, res, next) {
 		if (fromRateOneMovie == "true") {
 
 			var authData = db.getAuth();
-			console.log("userId: " + authData.uid);
 			uid = authData.uid;
 
 			var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
@@ -108,7 +107,6 @@ router.post('/', function(req, res, next) {
 	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
 	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
 	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-	  				console.log("newRatingString is: " + newRatingString);
 	  				foo = {};
 	  				foo[rounded_year] = newRatingString;
 	  				yearsRef.update(foo);
