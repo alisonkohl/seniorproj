@@ -5,6 +5,7 @@ var db = new Firebase("https://watchwithus.firebaseio.com/");
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
+	db.unauth();
   res.render('login', { title: 'Login' });
 });
 
