@@ -1,22 +1,34 @@
 <center>
 	<h1>Account</h1>
+	<p>{{message}}</p>
 	<h3>Logged in as {{username}}</h3>
 	<br/>
 	<form action='/accountpage' method='POST'>
+		<input type="hidden" name="username" value="{{username}}"/>
 		<div id="emailDiv">
 			<input type="hidden" name="emailChanged" id="emailChanged" value="false"/>
-			<input type="text" name="email" id="email" value="{{email}}" disabled/>
-			<button type="button" class="btn btn-default" id="editEmail">Edit Email</button>
-			<button type="submit" id="emailSubmit" class="btn btn-default" style="display:none;"> Email</button>
+			<input type="hidden" name="oldEmail" value="{{email}}"/>
+			<input type="text" name="emailEdit" id="emailEdit" style="display:none;" placeholder="New Email"/>
+			<br/>
+			<input type="password" name="password" id="password" style="display:none;" placeholder="Your Password"/>
+			<h3 id="emailDisplay">{{email}}&nbsp;<button type="button" class="btn btn-default" id="editEmailBtn">Edit Email</button></h3>
+			<br/>
+			<br/>
+			<button type="submit" id="emailSubmit" class="btn btn-default" style="display:none;">Save</button>
 			<script>
-				$("#editEmail").click(function() {
-					$("#email").removeAttr("disabled");
-					$("#editEmail").setAttr("display", "none");
+				$("#editEmailBtn").click(function() {
+					$("#emailEdit").attr("style", "display:inline;");
+					$("#password").attr("style", "display:inline;");
+					$("#emailDisplay").attr("style", "display:none;");
+					$("#editEmailBtn").attr("style", "display:none;");
+					$("#editEmailBtn").attr("display", "none");
 					$("#emailChanged").val("true");
-				})
+					$("#emailSubmit").attr("style", "display:inline;");
+				});
 			</script>
 		</div>
 		<input type="hidden" name="passwordChanged" id="passwordChanged" value="false"/>
 	</form>
+	<br/>
 	<a href="/createaccount" class="btn btn-default btn-lg" role="button">Logout</a>
 </center>

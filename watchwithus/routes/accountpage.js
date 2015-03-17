@@ -41,15 +41,15 @@ router.post('/', function(req, res, next) {
 	if (email_changed == "true") {
 		db.changeEmail({
 		  oldEmail : form_data.oldEmail,
-		  newEmail : form_data.email,
+		  newEmail : form_data.emailEdit,
 		  password : form_data.password
 		}, function(error) {
 		  if (error === null) {
 		    console.log("Email changed successfully");
-		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.email, 'message': "Successfully changed email address!" });
+		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.emailEdit, 'message': "Successfully changed email address!" });
 		  } else {
 		    console.log("Error changing email:", error);
-		   	res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.oldEmail, 'message': "Error changing email: " + error) });
+		   	res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.oldEmail, 'message': "Error changing email. Please try again." });
 		  }
 		});
 	}
