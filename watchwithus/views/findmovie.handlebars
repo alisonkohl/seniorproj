@@ -36,27 +36,6 @@
 
 <center>
 	<div class = "touch" id="window">
-		<!-- <h1 style="margin-top:30px; margin-bottom:30px;">{{title}}</h1> -->
-
-		<!--<a role="button" href="/findmovie" class="btn btn-default" style="float:left; margin-top:80px;">
-			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;">
-		</a>
-		<img src="{{thumbnail}}" height="220px"></img>
-		<a role="button" href="/findmovie" class="btn btn-default" style="float:right; margin-top:80px;">
-			<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;">
-		</a>-->
-
-		<!-- <form action="/findmovie" method="POST" style="display:inline-block; margin:auto;">
-			<div class="form-group">
-				<input type="hidden" value="{{index}}" name="index"></input>
-				<input type="hidden" value="{{movieString}}" name="movieString"></input>
-				<input type="hidden" value="{{movieRating}}" name="movieRating"></input>
-				<input type="hidden" value=-1 name="increment"></input>
-			</div>
-			<button type="submit" class="btn btn-default btn-lg" style="margin:8px;" style="float:left; margin-top:80px;">
-				<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;">
-			</button>
-		</form> -->
 		{{#if justrated}}
 			<p id = "thanksForRating">Thanks for rating!</p>
 		{{else}}
@@ -83,11 +62,6 @@
 				$("#watchMovieThumbnail").val(thumbnails[index]);
 				$("#watchMovieGenres").val(allGenres[index]);
 
-				/*$("#rateMoviesGenre").val(allGenres[index]);
-				$("#rateMoviesYear").val(years[index]);
-				$("#rateMovieRating").val(aggregateRatings[index]);
-				$("#rateMovieTitle").val(titles[index]);*/
-
 				var poster = document.getElementById("poster");
 				poster.src = thumbnails[index];
 				var title = document.getElementById("title");
@@ -95,7 +69,6 @@
 			});
 		</script>
 
-		<!-- <img src="{{thumbnail}}" height="220px"></img> -->
 		<script>
 			var poster = document.createElement("img");
 			poster.id = "poster";
@@ -103,29 +76,14 @@
 			console.log(thumbnails[index]);
 			console.log(titles[index]);
 			poster.style.height = '220px';
-			// var synopsisDisplayed = false;
 			document.getElementById("window").appendChild(poster);
 			poster.onclick = function() {
-				// console.log(synopsisDisplayed);
-				// if (synopsisDisplayed == false) {
-				// 	synopsisDisplayed = true;
 				    $('body').append('<div id=\'overlay\' style=\'position:absolute;top:0%;left:0%;width:100%;height:100%;background:black;z-index:1001;opacity:0.8;\'></div>');
 				    $('body').append('<div id="synopsis" style=\'position:absolute;text-align:center;top:50%;left:50%;z-index:1002;overflow:auto;width:300px;height:400px;margin-left:-150px;margin-top:-200px;\'><p style="color:white;text-align:center;">' + '<strong>' + titles[index] + '(' + years[index] + ')</strong>' + '<br/>' + 'Directed by ' + directors[index] + '<br/>' + 'Starring: ' + actors[index] + '<br/><br/>' + synopses[index] + '</p></div>');
 				    $('#synopsis').append('<button id="close" onclick="closeSynopsis()" type="button">close</button>');
 
-				    //TODO: append director, year, etc
-
-				// } else {
-				// 	synopsisDisplayed = false;
-				// 	$('body').remove('#overlay');
-				// 	$('body').remove('#synopsis');
-				// }
 			};
-			// $('#close').onclick = function() {
-		 //    	console.log("clicked");
-		 //    	$('body').remove('#overlay');
-		 //    	$('body').remove('#synopsis');
-		 //    };
+
 		</script>
 		<script>
 			function closeSynopsis() {
@@ -134,17 +92,7 @@
 				$("#synopsis").remove();
 			}
 		</script>
-<!-- 		<form action="/findmovie" method="POST" style="display:inline-block; margin:auto;">
-			<div class="form-group">
-				<input type="hidden" value="{{index}}" name="index"></input>
-				<input type="hidden" value="{{movieString}}" name="movieString"></input>
-				<input type="hidden" value="{{movieRating}}" name="movieRating"></input>
-				<input type="hidden" value=1 name="increment"></input>
-			</div>
-			<button type="submit" class="btn btn-default btn-lg" style="margin:8px;" style="float:right; margin-top:80px;">
-				<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;">
-			</button>
-		</form> -->
+
 		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;" id="rightbutton"></span>
 		<script>
 			$("#rightbutton").click(function() {
@@ -158,11 +106,6 @@
 				$("#watchMovieTitle").val(titles[index]);
 				$("#watchMovieThumbnail").val(thumbnails[index]);
 				$("#watchMovieGenres").val(allGenres[index]);
-
-				/*$("#rateMoviesGenre").val(allGenres[index]);
-				$("#rateMoviesYear").val(years[index]);
-				$("#rateMovieRating").val(aggregateRatings[index]);
-				$("#rateMovieTitle").val(titles[index]);	*/
 
 				var poster = document.getElementById("poster");
 				poster.src = thumbnails[index];
@@ -302,13 +245,10 @@
 	</script>
 	<form action="/rateonemovie" method="POST" style="display:inline-block; margin:auto;">
 		<div class="form-group">
-			<!-- <input type="hidden" value="{{index}}" name="index"></input> -->
-			<!-- <input type="hidden" value="{{movieString}}" name="movieString"></input> -->
 			<input id="watchMovieRating" type="hidden" name="movieRating"></input>
 			<input id="watchMovieYear" type="hidden" name="year"></input>
 			<input id="watchMovieTitle" type="hidden" name="title"></input>
 			<input id="watchMovieThumbnail" type="hidden" name="thumbnail"></input>
-			<!-- <input id="watchMovieMid" type="hidden" value="{{mid}}" name="mid"></input> -->
 			<input id="watchMovieGenres" type="hidden" name="genres"></input>
 			<input id="recentFriends" type="hidden" name="recentFriends" value="{{recentFriends}}"></input>
 		</div>
@@ -326,17 +266,6 @@
 			$("#watchMovieThumbnail").val(thumbnails[index]);
 			$("#watchMovieGenres").val(allGenres[index]);
 			console.log(document.getElementById("watchMovieTitle").value);
-
-			/*$("#rateMoviesGenre").val(allGenres[index]);
-			$("#rateMoviesYear").val(years[index]);
-			$("#rateMovieRating").val(aggregateRatings[index]);
-			$("#rateMovieTitle").val(titles[index]);*/
-
-			// var synopsis = document.createElement("p");
-			// synopsis.id = "synopsis";
-			// synopsis.innerHTML = synopses[index];
-			// document.getElementById("window").appendChild(synopsis);
 	</script>
-	<!--<script type="text/javascript" src="javascripts/swipe.js"/>-->
 	<script src="javascripts/bundle.js"></script>
 </center>

@@ -256,7 +256,6 @@ router.post('/', function(req, res, next) {
 	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
 	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
 	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-	  				console.log("newRatingString is: " + newRatingString);
 	  				foo = {};
 	  				foo[ids[n]] = newRatingString;
 	  				genresRef.update(foo);
@@ -473,7 +472,6 @@ router.post('/', function(req, res, next) {
 											}
 										}
 										newBody += "}";
-										//console.log("newBody: " + newBody);
 
 										/*Check to make sure call was not "unauthorized"*/
 										if (newBody[1] != "!") {
@@ -493,39 +491,6 @@ router.post('/', function(req, res, next) {
 											/*Add all data on this movie to movieStringNew if the title on omdb matched with tmdb movie title
 											(meaning m_arr_data != undefined)*/
 											if (m_arr_data != undefined) {
-//********starting here is the part for getting user rating
-											//var specificUserRef2 = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-											//var ratingsRef = specificUserRef2.child("ratings");
-
-											/*
-												new Firebase("https://watchwithus.firebaseio.com/users/simplelogin%3A" + uid.substring(14))
-													.startAt(newTitle)
-													.endAt(newTitle)
-													.once('value', function(snap) {
-														console.log("title is: " + newTitle);
-														console.log("val is: " + snap.val());
-														if (snap.val() != undefined) {
-															console.log("it was found and rating is " + snap.val().rating);
-														}
-													});
-													*/
-
-												/*var usersRef2 = new Firebase("https://watchwithus.firebaseio.com/users");
-												usersRef2.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
-													user_fb = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-													var ratings_fb = user_fb.child("ratings");
-													ratings_fb.startAt(newTitle)
-														.endAt(newTitle)
-														.once('value', function(snap) {
-															console.log("title is: " + newTitle);
-															console.log("val is: " + snap.val());
-															if (snap.val() != undefined) {
-																console.log("the movie was found and rating is " + snap.val().rating);
-															}
-														});
-												});*/
-
-//**** end part for user rating
 												movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
 											}
 										}

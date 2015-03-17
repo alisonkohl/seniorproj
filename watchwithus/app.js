@@ -17,6 +17,7 @@ var findMovie = require('./routes/findmovie');
 var rateonemovie = require('./routes/rateonemovie');
 var addfriends = require('./routes/addfriends');
 var viewratings = require('./routes/viewratings');
+var accountpage = require('./routes/accountpage');
 
 var app = express();
 
@@ -42,6 +43,7 @@ app.use('/findmovie', findMovie);
 app.use('/rateonemovie', rateonemovie);
 app.use('/addfriends', addfriends);
 app.use('/viewratings', viewratings);
+app.use('/accountpage', accountpage);
 
 
 // catch 404 and forward to error handler

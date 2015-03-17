@@ -200,6 +200,7 @@ router.post('/', function(req, res, next) {
 			});
 		}
 		else {
+			//This else statement is only reached when we are getting to this page after login.
 			db.authWithPassword({
 				email    : email,
 				password : password

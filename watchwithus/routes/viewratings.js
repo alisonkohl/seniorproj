@@ -16,6 +16,11 @@ router.get('/', function(req, res, next) {
 
 		var specificUserRatingsRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 
+		/*
+		Looks for all ratings for a particular user and creates four different arrays that are sorted in different ways.
+		One array sorts by rating low to high, one sorts rating high to low, one sorts by title a to z, and the last sorts
+		title z to a.
+		*/
 		specificUserRatingsRef.orderByChild("ratings").on("child_added", function(snapshot) {
 			if (snapshot.key() == "ratings") {
 				var userRatings = Object.keys(snapshot.val()).map(function(k) { return snapshot.val()[k] });
