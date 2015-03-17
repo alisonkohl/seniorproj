@@ -5,8 +5,8 @@ var db = new Firebase("https://watchwithus.firebaseio.com/");
 var url = require('url');
 var request = require('request');
 
-router.get('/', function(req, res, next) {
-	
+router.get('/', function(req, res, next){
+	res.render('index', {title: 'Watch With Us'});
 });
 
 /*

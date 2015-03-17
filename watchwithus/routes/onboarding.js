@@ -5,6 +5,10 @@ var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require("request");
 var url = require('url');
 
+router.get('/', function(req, res, next){
+	res.render('index', {title: 'Watch With Us'});
+});
+
 router.post('/', function(req, res, next) {
 
 	var url_parts = url.parse(req.url, true);
