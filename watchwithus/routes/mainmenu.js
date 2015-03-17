@@ -6,7 +6,13 @@ var request = require("request");
 var g_sort = new Array();
 
 router.get('/', function(req, res, next) {
-	res.render('index', {title: 'Watch With Us'});
+	var authData = db.getAuth();
+
+	if (authData == null) {
+		res.render('index', {title: 'Watch With Us'});
+	} else {
+		res.render('mainmenu', {title: 'Main Menu'});
+	}
 });
 
 router.post('/', function(req, res, next) {
