@@ -20,41 +20,44 @@ router.get('/', function(req, res, next) {
 			}
 			ratingsArr.sort(compareByRating);
 
-			var outByRating = [];
+			var outHL = [];
+			var outLH = [];
 			var len = ratingsArr.length - 1;
 			if (len >= 0) {
 			    for (var i = 0;i < len; i++) {
 			        if (ratingsArr[i].title != ratingsArr[i+1].title) {
-			            outByRating.push (ratingsArr[i]);
+			            outHL.push(ratingsArr[i]);
+			            outLH.push(ratingsArr[i]);
 			        }
 			    }
-			    outByRating.push (ratingsArr[len]);
+			    outHL.push(ratingsArr[len]);
+			    outLH.push(ratingsArr[len]);
 			}
-
+			outLH.reverse();
 			ratingsArr.sort(alphabetize);
-
-			var outAlphabetized = [];
+			var outAZ = [];
+			var outZA = [];
 			var len = ratingsArr.length - 1;
 			if (len >= 0) {
 			    for (var i = 0;i < len; i++) {
 			        if (ratingsArr[i].title != ratingsArr[i+1].title) {
-			            outAlphabetized.push (ratingsArr[i]);
+			            outAZ.push(ratingsArr[i]);
+			            outZA.push(ratingsArr[i]);
 			        }
 			    }
-			    outAlphabetized.push (ratingsArr[len]);
+			    outAZ.push(ratingsArr[len]);
+			    outZA.push(ratingsArr[len]);
 			}
-
-			res.render('viewratings', {title: 'View Ratings', 'ratings': outAlphabetized});
+			outZA.reverse();
+			res.render('viewratings', {title: 'View Ratings', 'ratingsHL': outHL, 'ratingsLH': outLH, 'ratingsAZ': outAZ, 'ratingsZA': outZA });
 		}
 	});
 
 });
 
 function compareByRating(a,b) {
-  if (a.rating < b.rating)
-     return 1;
-  if (a.rating > b.rating)
-    return -1;
+  if (a.rating < b.rating) return 1;
+  if (a.rating > b.rating) return -1;
   return 0;
 }
 

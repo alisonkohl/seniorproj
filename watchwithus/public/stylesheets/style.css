@@ -29,12 +29,18 @@ h5 {
 	color: #12512d;
 }
 
+p {
+	font-family: 'Fredoka One', cursive;
+	color: #12512d;
+}
+
 .btn-default {
   color: #ffffff;
   background-color: #27ae60;
   border-color: #12512d;
   border-radius: 8px;
   border-width: 3px;
+  font-family: 'Fredoka One', cursive;
 }
 .btn-default:hover,
 .btn-default:focus,
