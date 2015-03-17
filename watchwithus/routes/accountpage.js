@@ -37,6 +37,7 @@ router.post('/', function(req, res, next) {
 
 	var form_data = req.body;
 	var email_changed = form_data.emailChanged;
+	var password_changed = form_data.passwordChanged;
 	var username = form_data.username;
 	if (email_changed == "true") {
 		db.changeEmail({
@@ -50,6 +51,22 @@ router.post('/', function(req, res, next) {
 		  } else {
 		    console.log("Error changing email:", error);
 		   	res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.oldEmail, 'message': "Error changing email. Please try again." });
+		  }
+		});
+	}
+	if (password_changed == "true") {
+		db.changePassword({
+		  email       : form_data.email,
+		  oldPassword : form_data.oldPassword,
+		  newPassword : form_data.newPassword
+		}, function(error) {
+		  if (error === null) {
+		    console.log("Password changed successfully");
+		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.email, 'message': "Successfully changed password!" });
+
+		  } else {
+		    console.log("Error changing password:", error);
+		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.email, 'message': "Error changing password. Please try again." });
 		  }
 		});
 	}
