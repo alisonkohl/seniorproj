@@ -135,7 +135,7 @@ router.post('/', function(req, res, next) {
 	var rateMovie = postbody.rateMovie;
 	if (rateMovie == "true") {
 		/*Get their rating and movieDB average rating for this movie from form*/
-		var movieTitle = form_data.title.substring(0, form_data.title.length - 1);
+		var movieTitle = form_data.title;
 		var rating = parseInt(form_data.rating);
 		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 		var recentFriendsString = form_data.recentFriends;
