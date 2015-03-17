@@ -14,6 +14,8 @@
 	});
 	$("#sortLH").click(function() {
 		$("#sortHL").removeClass("active");
+		$("#ratings").html("");
+
 	});
 	$("#sortAZ").click(function() {
 		$("#sortHL").removeClass("active");
@@ -22,14 +24,14 @@
 		$("#sortHL").removeClass("active");
 	});
 </script>
-<form id='ratings'>
+<form action="mainmenu" method="POST" id='ratings'>
 	<input type="hidden" name="numMovies" value="{{ratingsHL.length}}"></input>
 	<input type="hidden" name="fromViewRatings" value="true"></input>
 	{{#each ratingsHL}}
 		<div id="{{@index}}" style="margin-top:20px;">
 			<h3>{{title}}</h3>
 			<input type="hidden" value="0" name="rating{{@index}}" id="ratingVal{{@index}}"></input>
-			<input type="hidden" value="0" name="title{{@index}}" id="ratingVal{{@index}}"></input>
+			<input type="hidden" value="{{title}}" name="title{{@index}}" id="ratingVal{{@index}}"></input>
 			<script>
 				var modifiedRating = 1 + (({{rating}} / 2) - 0.5);
 				$("#{{@index}}").append("<div id='starDiv{{@index}}' style='text-align:right;'>");
@@ -84,6 +86,7 @@
 			</script>
 		</div>
 	{{/each}}
+	<button type="submit" class="btn btn-default" id="submitbutton">Home</button>
 </form>
 <br/>
 <style>
