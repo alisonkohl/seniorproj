@@ -101,26 +101,6 @@ function getQueryArr(g_arr, y_arr) {
 }
 
 router.get('/', function(req, res, next) {
-
-	var authData = db.getAuth();
-	
-	uid = authData.uid;
-
-	var movieId = "9559";
-
-	request({
-		uri: "http://api.rottentomatoes.com/api/public/v1.0/movies/" + movieId + ".json?apikey=v67jb7aug6qwa4hnerpfcykp",
-		method: "GET",
-	}, function(error, response, body) {
-		var doc = JSON.parse(body);
-		var title = doc.title;
-		var synopsis = doc.synopsis;
-		var thumbnail = doc.posters.thumbnail.substring(0, doc.posters.thumbnail.length-7) + "det.jpg";
-		var audience_score = doc.ratings.audience_score;
-							
-		res.render('findmovie', {title: 'Find Movie', 'title': title, 'synopsis': synopsis, 'thumbnail': thumbnail, 'audience_score': audience_score, 'mid': movieId});
-						
-	});
 });
 
 router.post('/', function(req, res, next) {
@@ -152,17 +132,15 @@ router.post('/', function(req, res, next) {
 		var rating = parseInt(form_data.rating);
 		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 
+		/*Upload to Firebase their rating (in difference) for that movie, and average rating for year and genre ranges*/
 		var authData = db.getAuth();
 		uid = authData.uid;
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
 		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
-			//var index = snapshot.val().index;
-			//var moviesRated = snapshot.val().moviesRated;
-
-			//var newIndex = parseInt(index) + 1;
 
 			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 			
+			/*Push their rating for this movie*/
 			var difference = rating - movieDbRatingFromForm;
 			var ratingsRef = specificUserRef.child("ratings");
 	  		ratingsRef.push({
@@ -278,16 +256,21 @@ router.post('/', function(req, res, next) {
 	  			});
 	  		}
 
-			//specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
-
-			/*Send them back to Find Movie recommendations, at the same index*/
+			/*Strip the movie that they just rated out of movieString*/
 			var movieString = postbody.movieString;
-			res.render('findmovie', {'index': form_data.index, 'movieString': form_data.movieString});
+			movieIndexInString = movieString.indexOf(movieTitle);
+			if (movieIndexInString > -1) {
+				var end_index = movieString.indexOf(";;", movieIndexInString);
+				movieString = movieString.substring(0, movieIndexInString) + movieString.substring(end_index + 2);
+			}
+			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': 1});
 		});
 
 
 
-	/*Here, we calculate average ratings between all users for each genre and time period*/
+	/*This means we reach this page for the first time and need to generate the list of recommendations.
+
+	First, we calculate average ratings between all users for each genre and time period*/
 	} else {
 		var g_arr = {"16": "0 0", "10751": "0 0", "14": "0 0", "878": "0 0", "35": "0 0", "9648": "0 0", "53": "0 0", "28": "0 0", "12": "0 0", "18": "0 0", "99": "0 0", "10769": "0 0", "27": "0 0", "10402": "0 0", "10749": "0 0", "10770": "0 0", "37": "0 0"};
 		var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
@@ -523,29 +506,17 @@ router.post('/', function(req, res, next) {
 												usersRef2.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
 													user_fb = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 													var ratings_fb = user_fb.child("ratings");
-													console.log(ratings_fb);
 													ratings_fb.startAt(newTitle)
 														.endAt(newTitle)
 														.once('value', function(snap) {
 															console.log("title is: " + newTitle);
 															console.log("val is: " + snap.val());
 															if (snap.val() != undefined) {
-																console.log("it was found and rating is " + snap.val().rating);
+																console.log("the movie was found and rating is " + snap.val().rating);
 															}
 														});
 												});*/
 
-											//console.log("genreRef is: " + genresRef);
-											//var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
-											//var m_lock = 0;
-											//for (m2 = 0; m2 < movieStringArr.length; m2++) {
-											//	genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
-											//		users_rating = snapshot.val();					
-											//		movieStringArr[m2...
-
-											//while (g_lock < all_genres.length) {
-											//}
-											//console.log("done");*/
 //**** end part for user rating
 												movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
 											}
@@ -556,7 +527,7 @@ router.post('/', function(req, res, next) {
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
 										triggered_2 = true;
-										res.render('findmovie', {'index': 0, 'movieString': movieStringNew});
+										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': 0});
 									}
 								}
 							});
