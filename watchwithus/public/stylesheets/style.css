@@ -139,6 +139,10 @@ fieldset[disabled] .btn-default.active {
   transition: opacity 0.25s, width 0.25s;
 }
 
+.progress-bar {
+	background-color: #12512d;
+}
+
 .has-spinner.active {
   cursor:progress;
 }
