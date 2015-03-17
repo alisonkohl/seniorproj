@@ -5,14 +5,11 @@ var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require("request");
 var url = require('url');
 
-var movieIds = ["10288", "10597"]
-
 router.post('/', function(req, res, next) {
 
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 	var moviesToRate = query['moviesToRate'];
-	console.log("moviesToRate: " + moviesToRate);
 
 	var form_data = req.body;
 
@@ -20,8 +17,11 @@ router.post('/', function(req, res, next) {
 	var email = form_data.email;
 	var password = form_data.password;
 
-	console.log("email:" + email);
-
+	/*
+	This if statement checks if email is undefined, which indicates that a user has already begun the onboarding process.
+	Everything within the statement adds the new movie rating info, along with genre and year preferences to the database,
+	and finally reloads the onboarding page with a new index.
+	*/
 	if (email == undefined) {
 
 		var index = form_data.index;
@@ -31,7 +31,6 @@ router.post('/', function(req, res, next) {
 		var movieId = "";
 
 		var authData = db.getAuth();
-		console.log("userId: " + authData.uid);
 		uid = authData.uid;
 
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
@@ -39,8 +38,6 @@ router.post('/', function(req, res, next) {
 		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
 			var index = snapshot.val().index;
 			var moviesRated = snapshot.val().moviesRated;
-			console.log("index: " + index);
-			console.log("moviesRated: " + moviesRated);
 			var movieTitle = form_data.title;
 			var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
 
@@ -48,13 +45,13 @@ router.post('/', function(req, res, next) {
 
 			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 
-			var newMoviesRated;
 			var newMoviesToRate;
 			if (rating > 0) {
 				var difference = rating - movieDbRatingFromForm;
 				newMoviesToRate = parseInt(moviesToRate) - 1;
-				newMoviesRated = parseInt(moviesRated) + 1;
 				var ratingsRef = specificUserRef.child("ratings");
+
+				//Here we add the movie's rating information to the database.
 		  		ratingsRef.push({
 		  			title: movieTitle,
 		  			rating: rating,
@@ -69,14 +66,10 @@ router.post('/', function(req, res, next) {
 				}
 
 		  		var rounded_year = year.replaceAt(3, "0");
-		  		console.log("rounded year is: " + rounded_year);
-
-
-		  		//switch statement on the years to group into categories, then:
-
 
 		  		var yearsRef = specificUserRef.child("years");
 
+		  		//Here we update the user's year preferences
 	  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
 	  				var currValue = snapshot.val();
 	  				var ratingAndCount = currValue.split(' ');
@@ -87,23 +80,23 @@ router.post('/', function(req, res, next) {
 	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
 	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
 	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-	  				console.log("newRatingString is: " + newRatingString);
 	  				foo = {};
 	  				foo[rounded_year] = newRatingString;
 	  				yearsRef.update(foo);
 
 	  			});
 
-
+	  			/*
+	  			Here we update the user's genre preferences.
+	  			The switch statment is necessary because the genre names that we get from the
+	  			OMDB need to be mapped to the genre ids of the MovieDB API, which we query for a list of movies in our algorithm.
+	  			*/
 		  		var genresRef = specificUserRef.child("genres");
-		  		//var genreStringFromQuery = query['genreString'];
 		  		var genreStringFromQuery = form_data.genreString;
-		  		//console.log("genreStringFromQuery is: " + genreStringFromQuery);
 		  		var genreArray = genreStringFromQuery.split(', ');
 		  		var ids = [];
 		  		for (i = 0; i < genreArray.length; i++) {
 		  			var genreName = genreArray[i];
-		  			console.log("genreName is: " + genreName);
 		  			switch(genreName) {
 		  				case "Animation":
 		  					ids.push("16");
@@ -158,7 +151,6 @@ router.post('/', function(req, res, next) {
 		  					break;
 		  			}
 		  		}
-		  		console.log("ids are " + ids);
 		  		for (n = 0; n < ids.length; n++){
 		  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
 		  				var currValue = snapshot.val();
@@ -170,7 +162,6 @@ router.post('/', function(req, res, next) {
 		  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
 		  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
 		  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-		  				console.log("newRatingString is: " + newRatingString);
 		  				foo = {};
 		  				foo[ids[n]] = newRatingString;
 		  				genresRef.update(foo);
@@ -180,19 +171,19 @@ router.post('/', function(req, res, next) {
 
 			} else {
 				newMoviesToRate = parseInt(moviesToRate);
-				newMoviesRated = parseInt(moviesRated);
 			}
-
-			specificUserRef.update({index: newIndex, moviesRated: newMoviesRated});
 
 			var moviesToRateRef = new Firebase("https://watchwithus.firebaseio.com/moviesToRate");
 
+			/*
+			The following database and API call get the id of the next movie to rate in the onboarding process,
+			use that id to query the OMDB api for all of the relevant information, and then render the onboarding page with that info.
+			*/
 			moviesToRateRef.orderByKey().equalTo(newIndex.toString()).on("child_added", function(snapshot) {
 		  		movieId = snapshot.val();
 		  		var movieIdValues = movieId.split(' ');
 		  		movieId = movieIdValues[0];
 		  		var movieDbRating = movieIdValues[1];
-		  		console.log("movieId: " + movieId);
 
 				request({
 					uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
@@ -219,7 +210,11 @@ router.post('/', function(req, res, next) {
 		});
 
 	} else {
-
+		/*
+		This else statement is reached only when the user first creates an account. This part of the function
+		creates a new user, initializes their genre and year preferences to 0's, queries the OMDB API for the
+		first movie to rate, and renders the onboarding page with that relevant information.
+		*/
 		db.orderByChild("users").on("child_added", function(snapshot) {
 			if (snapshot.key() == "users") {
 				var userIds = Object.keys(snapshot.val());
@@ -228,6 +223,7 @@ router.post('/', function(req, res, next) {
 				for (i = 0; i < arr.length; i++) {
 					userData.push(arr[i].username);
 				}
+				//This checks if a username already exists. If so, we return to the Create Account page.
 				if (userData.indexOf(form_data.username) > -1) {
 					res.render('createAccount', {title: 'Create Account', 'errorMessage': "That username already exists. Please try another."});
 				} else {
@@ -245,6 +241,7 @@ router.post('/', function(req, res, next) {
 
 					  		var id = "";
 
+					  		//Firebase requries that even after we create a user, we must log them in manually.
 					  		db.authWithPassword({
 					  			email    : email,
 								password : password
@@ -256,11 +253,7 @@ router.post('/', function(req, res, next) {
 								    remember: "sessionOnly"
 								    id = authData.uid;
 
-								    console.log("id: " + id);
-					  				/*db.set({
-					  					id: id
-					  				});	*/
-
+								    //Creates a new user and initializes all attributs.
 					  				var db2 = db.child("users/" + id);
 					  				db2.set({
 					  					username: form_data.username,
@@ -269,16 +262,10 @@ router.post('/', function(req, res, next) {
 					  					years: {},
 					  					index: 0,
 					  					moviesRated: 0,
-					  					recentFriends: "sample"
+					  					recentFriends: ""
 					  				});
 
-					  				/*var db2 = db.child("users/user2");
-					  				db2.set({
-					  					name: form_data.name,
-					  					ratings: {},
-					  					index: -1
-					  				});*/
-
+					  				//Initializes attributes for user's genre preferences.
 					  				var db3 = db2.child("genres");
 					  				db3.set({
 					  					16: "0 0 0",
@@ -300,6 +287,7 @@ router.post('/', function(req, res, next) {
 					  					37: "0 0 0"
 					  				});
 
+					  				//Initializes attributes for user's year preferences.
 					  				var db3 = db2.child("years");
 					  				db3.set({
 					  					1900: "0 0 0",
@@ -315,28 +303,20 @@ router.post('/', function(req, res, next) {
 					  					2000: "0 0 0",
 					  					2010: "0 0 0"
 					  				});
-
-					  				/*var db4 = db2.child("ratings");
-					  				db4.push({
-					  					mid: 8654,
-					  					rating: 4
-					  				});*/
 								}
 					  		});
-
-					  		moviesArray = [];
 
 					  		var moviesToRateRef = new Firebase("https://watchwithus.firebaseio.com/moviesToRate");
 
 					  		var movieId = "";
 
+					  		//Gets the first movie id for rating, queries OMDB using that id, and renders Onboarding with this new information.
 					  		moviesToRateRef.orderByKey().equalTo("0").on("child_added", function(snapshot) {
 					  			movieId = snapshot.val();
 					  			var movieIdValues = movieId.split(' ');
 					  			movieId = movieIdValues[0];
 					  			var movieDbRating = movieIdValues[1];
 
-				  				console.log("movieId: " + movieId);
 								request({
 									uri: "http://www.omdbapi.com/?i=" + movieId + "&plot=short&r=json",
 									method: "GET",
@@ -355,6 +335,7 @@ router.post('/', function(req, res, next) {
 
 					  		
 						} else {
+							//This else is reached if a user with that email address already exists. Returns to Create Account.
 							console.log("Error creating user: ", error);
 							res.render('createAccount', {title: 'Create Account', 'errorMessage': "That email address already exists. Please try again."});
 						}
