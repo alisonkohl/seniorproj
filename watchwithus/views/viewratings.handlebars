@@ -1,3 +1,71 @@
 <center>
 	<h1>Your Past Ratings</h1>
 </center>
+{{#each ratings}}
+	<div id="{{@index}}" style="margin-top:20px;">
+		<h3>{{title}}</h3>
+		<input type="hidden" value="0" name="rating" id="ratingVal{{@index}}"></input>
+		<script>
+			var modifiedRating = 1 + (({{rating}} / 2) - 0.5);
+			$("#{{@index}}").append("<div id='starDiv{{@index}}' style='text-align:right;'>");
+			for (var i = 0; i < modifiedRating; i++) {
+				$("#starDiv{{@index}}").append("<span id='star{{@index}}" + (i+1) + "' class='glyphicon glyphicon-star'></span>");
+			}
+			for (var i = modifiedRating; i < 5; i++) {
+				$("#starDiv{{@index}}").append("<span id='star{{@index}}" + (i+1) + "' class='glyphicon glyphicon-star-empty'></span>");
+			}
+		</script>
+		<script>
+			$("#star{{@index}}1").click(function() {
+				console.log("CLICKED");
+				$("#star{{@index}}1").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}2").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}3").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}4").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}5").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#ratingVal{{@index}}").val(1);
+			});
+			$("#star{{@index}}2").click(function() {
+				$("#star{{@index}}1").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}2").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}3").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}4").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}5").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#ratingVal{{@index}}").val(3);
+			});
+			$("#star{{@index}}3").click(function() {
+				$("#star{{@index}}1").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}2").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}3").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}4").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#star{{@index}}5").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#ratingVal{{@index}}").val(5);
+			});
+			$("#star{{@index}}4").click(function() {
+				$("#star{{@index}}1").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}2").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}3").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}4").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}5").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$("#ratingVal{{@index}}").val(7);
+			});
+			$("#star{{@index}}5").click(function() {
+				$("#star{{@index}}1").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}2").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}3").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}4").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#star{{@index}}5").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$("#ratingVal{{@index}}").val(9);
+			});
+		</script>
+	</div>
+{{/each}}
+<br/>
+<style>
+	.glyphicon {
+		font-size: 40px;
+		color: #12512d;
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+</style>
