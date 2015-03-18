@@ -14,6 +14,7 @@ router.post('/', function(req, res, next) {
 	    email : form_data.email
 	  }, function(error) {
 	  if (error === null) {
+	  	
 	    console.log("Password reset email sent successfully");
 	    res.render('login', { title: 'Login', 'passwordResetMessage': "Password reset email sent." });
 	  } else {

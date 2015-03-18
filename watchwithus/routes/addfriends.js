@@ -10,9 +10,7 @@ router.get('/', function(req, res, next){
 
 router.post('/', function(req, res, next) {
 
-	var authData = db.getAuth();
-	
-	uid = authData.uid;
+	uid = req.session.uid;
 
 	var usersRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 

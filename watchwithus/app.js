@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var Firebase = require("firebase");
 var myFirebaseRef = new Firebase("https://watchwithus.firebaseio.com/");
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var login = require('./routes/login');
@@ -33,6 +34,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}))
 
 app.use('/', routes);
 app.use('/login', login);

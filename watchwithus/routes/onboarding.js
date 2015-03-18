@@ -259,6 +259,8 @@ router.post('/', function(req, res, next) {
 								if (error) {
 									console.log("Login Failed!", error);
 								} else {
+									req.session.uid = authData.uid;
+									req.session.email = form_data.email;
 								    console.log("Authenticated successfully with payload:", authData);
 								    remember: "sessionOnly"
 								    id = authData.uid;

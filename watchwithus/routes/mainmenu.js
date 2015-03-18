@@ -208,6 +208,8 @@ router.post('/', function(req, res, next) {
 			  	if (error) {
 			    	res.render('login', {title: 'Login', 'errorMessage': true});
 	 			} else {
+	 				req.session.uid = authData.uid;
+					req.session.email = form_data.email;
 	 				res.render('mainmenu', {title: 'Main Menu'});
 	 			}
 			});

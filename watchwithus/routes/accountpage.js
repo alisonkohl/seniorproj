@@ -6,14 +6,11 @@ var request = require('request');
 
 router.get('/', function(req, res, next){
 
-	var authData = db.getAuth();
-
-	if (authData == null) {
+	if (req.session == undefined) {
 		res.render('index', {title: 'Watch With Us'});
 	} else {
-	
-		uid = authData.uid;
-
+		uid = req.session.uid;
+		console.log(req.session.email);
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 
 
@@ -24,7 +21,7 @@ router.get('/', function(req, res, next){
 				for (i = 0; i < arr.length; i++) {
 					if (userIds[i] == uid) {
 						var username = arr[i].username;
-						res.render('account', {title: 'Account Page', 'username': username, 'email': authData.password.email });
+						res.render('account', {title: 'Account Page', 'username': username, 'email': req.session.email });
 					}
 				}
 			}
