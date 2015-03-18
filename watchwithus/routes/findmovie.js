@@ -144,6 +144,8 @@ router.post('/', function(req, res, next) {
 		var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
 
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+		var users_avg_g_rating = 0;
+		var num_g_rated = 0;
 		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
 			for (f_id = 0; f_id < group.length; f_id++) {
 				var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + group[f_id]);
@@ -152,19 +154,17 @@ router.post('/', function(req, res, next) {
 				var genresRef = specificUserRef.child("genres");
 				var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
 				var g_lock = 0;
-				var user_avg_g_rating = 0;
-				var num_g_rated = 0;
 				for (g = 0; g < all_genres.length; g++) {
 					genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
 						average_rating = snapshot.val();
 						var ratingArray = average_rating.split(' ');
 						rating_float = parseFloat(ratingArray[1]);
-						user_avg_g_rating = ((user_avg_g_rating * num_g_rated) + rating_float) / (num_g_rated + 1);
+						users_avg_g_rating = ((users_avg_g_rating * num_g_rated) + rating_float) / (num_g_rated + 1);
 						num_g_rated++;
-						
+
 						/*If one of the users consistently hates a genre, remove it*/
-						if ((rating_float < -1.0 && user_avg_g_rating >= -1.0) || (user_avg_g_rating < -1.0 && rating_float < user_avg_g_rating)) {
-							console.log("discarding1: " + rating_float + " " + user_avg_g_rating);
+						if ((rating_float < -1.0 && users_avg_g_rating >= -1.0) || (users_avg_g_rating < -1.0 && rating_float < users_avg_g_rating)) {
+							console.log("discarding1: " + rating_float + " " + users_avg_g_rating);
 							delete g_arr[snapshot.key()];
 
 						/*Else average in this user's value for that year*/
