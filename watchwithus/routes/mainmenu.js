@@ -8,7 +8,7 @@ var g_sort = new Array();
 router.get('/', function(req, res, next) {
 	var authData = db.getAuth();
 
-	if (authData == null) {
+	if (req.session.uid == undefined || req.session.uid == null) {
 		res.render('index', {title: 'Watch With Us'});
 	} else {
 		res.render('mainmenu', {title: 'Main Menu'});
@@ -29,8 +29,7 @@ router.post('/', function(req, res, next) {
 	*/
 	if (fromViewRatings == "true") {
 
-		var authData = db.getAuth();
-		var uid = authData.uid;
+		uid = req.session.uid;
 		var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 		var ratingsRef = specificUserRef.child("ratings");
 
@@ -62,8 +61,7 @@ router.post('/', function(req, res, next) {
 		*/
 		if (fromRateOneMovie == "true") {
 
-			var authData = db.getAuth();
-			uid = authData.uid;
+			uid = req.session.uid;
 
 			var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
 

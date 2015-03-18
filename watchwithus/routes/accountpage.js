@@ -6,7 +6,7 @@ var request = require('request');
 
 router.get('/', function(req, res, next){
 
-	if (req.session == undefined) {
+	if (req.session.uid == undefined || req.session.uid == null) {
 		res.render('index', {title: 'Watch With Us'});
 	} else {
 		uid = req.session.uid;
@@ -44,6 +44,7 @@ router.post('/', function(req, res, next) {
 		}, function(error) {
 		  if (error === null) {
 		    console.log("Email changed successfully");
+		    req.session.email = form_data.emailEdit;
 		    res.render('account', {title: 'Account Page', 'username': username, 'email': form_data.emailEdit, 'message': "Successfully changed email address!" });
 		  } else {
 		    console.log("Error changing email:", error);

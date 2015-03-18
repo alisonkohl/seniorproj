@@ -5,6 +5,8 @@ var db = new Firebase("https://watchwithus.firebaseio.com/");
 
 router.get('/', function(req, res, next) {
 	db.unauth();
+	req.session.uid = null;
+	req.session.email = null;
   res.render('login', { title: 'Login' });
 });
 
@@ -14,7 +16,6 @@ router.post('/', function(req, res, next) {
 	    email : form_data.email
 	  }, function(error) {
 	  if (error === null) {
-	  	
 	    console.log("Password reset email sent successfully");
 	    res.render('login', { title: 'Login', 'message': "Please check your email for instructions on how to reset your password." });
 	  } else {

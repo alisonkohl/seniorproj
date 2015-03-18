@@ -34,8 +34,7 @@ router.post('/', function(req, res, next) {
 
 		var movieId = "";
 
-		var authData = db.getAuth();
-		uid = authData.uid;
+		uid = req.session.uid;
 
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
 

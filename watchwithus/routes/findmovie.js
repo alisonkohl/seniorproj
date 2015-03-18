@@ -105,8 +105,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	var authData = db.getAuth();
-	uid = authData.uid;
+	uid = req.session.uid;
 	var postbody = req.body;
 	var form_data = req.body;
 
@@ -375,8 +374,7 @@ router.post('/', function(req, res, next) {
 		var recentFriendsString = form_data.recentFriends;
 
 		/*Upload to Firebase their rating (in difference) for that movie, and average rating for year and genre ranges*/
-		var authData = db.getAuth();
-		uid = authData.uid;
+		uid = req.session.uid;
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
 		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
 
