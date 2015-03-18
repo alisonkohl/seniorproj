@@ -34,7 +34,10 @@ router.post('/', function(req, res, next) {
 
 		var movieId = "";
 
-		uid = req.session.uid;
+		//var uid = req.session.uid;
+		//console.log("req.session.uid: " + uid);
+		authData = db.getAuth();
+		var uid = authData.uid;
 
 		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
 
@@ -211,7 +214,16 @@ router.post('/', function(req, res, next) {
 					var synopsis = doc3.Plot;
 					var thumbnail = doc3.Poster;
 					var genres = doc3.Genre;
-					res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating, 'showButton': showButton});
+					request({
+		      			url: "http://api.themoviedb.org/3/search/movie?query=" + encodeURI(newTitle) + "&api_key=3db59b073812110b693901ba4501b0d2",
+		      			method: "GET",
+					}, function(error, response, body) {
+						var doc4 = JSON.parse(body);
+						var results = doc4.results;
+						var thumbnail = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
+						res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': newMoviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating, 'showButton': showButton});
+					});
+
 				});	
 			});
 
@@ -258,8 +270,6 @@ router.post('/', function(req, res, next) {
 								if (error) {
 									console.log("Login Failed!", error);
 								} else {
-									req.session.uid = authData.uid;
-									req.session.email = form_data.email;
 								    console.log("Authenticated successfully with payload:", authData);
 								    remember: "sessionOnly"
 								    id = authData.uid;
@@ -337,15 +347,18 @@ router.post('/', function(req, res, next) {
 									var newTitle = doc3.Title;
 									var newYear = doc3.Year;
 									var synopsis = doc3.Plot;
-									var thumbnail = doc3.Poster;
 									var genres = doc3.Genre;
-									res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
+									request({
+						      			url: "http://api.themoviedb.org/3/search/movie?query=" + encodeURI(newTitle) + "&api_key=3db59b073812110b693901ba4501b0d2",
+						      			method: "GET",
+									}, function(error, response, body) {
+										var doc4 = JSON.parse(body);
+										var results = doc4.results;
+										var thumbnail = "http://image.tmdb.org/t/p/w150" + results[0].poster_path;
+										res.render('onboarding', {title: 'Onboarding', 'title': newTitle, 'synopsis': synopsis, 'thumbnail': thumbnail, 'year': newYear, 'index': properIndex, 'moviesToRate': moviesToRate, 'mid': movieId, 'genreString': genres, 'movieDbRating': movieDbRating});
+									});
 								});	
 					  		});
-
-
-
-					  		
 						} else {
 							console.log("Error creating user: ", error);
 							res.render('createAccount', {title: 'Create Account', 'errorMessage': "That email address already exists. Please try again."});

@@ -4,14 +4,24 @@ var Firebase = require("firebase");
 var db = new Firebase("https://watchwithus.firebaseio.com/");
 var request = require("request");
 var g_sort = new Array();
+var url = require('url');
 
 router.get('/', function(req, res, next) {
 	var authData = db.getAuth();
-
-	if (req.session.uid == undefined || req.session.uid == null) {
-		res.render('index', {title: 'Watch With Us'});
-	} else {
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
+	var fromOB = query['fromOB'];
+	if (fromOB == "true") {
+		req.session.uid = authData.uid;
+		console.log("req.session.uid: " + req.session.uid);
+		req.session.email = authData.password.email;
 		res.render('mainmenu', {title: 'Main Menu'});
+	} else {
+		if (req.session.uid == undefined || req.session.uid == null) {
+			res.render('index', {title: 'Watch With Us'});
+		} else {
+			res.render('mainmenu', {title: 'Main Menu'});
+		}
 	}
 });
 

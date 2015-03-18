@@ -105,11 +105,11 @@
 		progress.innerHTML = "<font color=\"white\">" + percentageOfMoviesRated + " Complete" + "</font>";
 	</script>
 	{{#if showButton}}
-		<a role="button" href="/mainmenu" class="btn btn-default" id="continuebutton">
+		<a role="button" href="/mainmenu?fromOB=true" class="btn btn-default" id="continuebutton">
 		Get Recommendations!
 		</a>
 	{{else}}
-		<a role="button" href="/mainmenu" class="btn btn-default disabled" id="continuebutton">
+		<a role="button" href="/mainmenu?fromOB=true" class="btn btn-default disabled" id="continuebutton">
 		Get Recommendations!
 		</a>
 	{{/if}}

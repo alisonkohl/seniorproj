@@ -8,11 +8,11 @@ var request = require('request');
 router.get('/', function(req, res, next) {
 	var authData = db.getAuth();
 
-	if (authData == null) {
+	if (req.session.uid == undefined || req.session.uid == null) {
 		res.render('index', {title: 'Watch With Us'});
 	} else {
 
-		uid = authData.uid;
+		uid = req.session.uid;
 
 		var specificUserRatingsRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
 
