@@ -230,7 +230,7 @@ router.post('/', function(req, res, next) {
 		var render_threshhold = 50;
 
 		/*Push the additional catch-all query if the list is too short*/
-		if (query_arr.length <= 2) {
+		if (query_arr.length <= 5) {
 			var query_to_push = "vote_average.gte=7.5";
 			query_arr.push(query_to_push);
 		}
