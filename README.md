@@ -7,11 +7,18 @@ http://watchwithus.herokuapp.com
 
 ##About
 Watch With Us is a web application built using Express, which is a Node.js web application framework. Express allows for the installation of a number of packages that provide various functionalities, including API and database calls. The file that handles all of the different routes is app.js. App.js assigns each of the route files to variables that are called in GET and POST requests in handlebars pages.
+
+Our app also leverages node packages. You can view the modules we used at seniorproj/watchwithus/node-modules. Most of the modules listed here are part of Express or are Express dependencies, but the notable modules are:
+- session - managing session variables
+- node-touch - swipe listeners
+- request - make HTTP requests and process responses, used for all API calls
+
 The application is also built using Handlebars, which is a templating system used when passing data from server side javascript to client side javascript and HTML.
 Our database management system is Firebase, whose API allows for easy data queries, modifications, and additions.
-We are hosting our application on Heroku.
-The last external sources we are using are two APIs - OMDB and The Movie Database (TMDb). We use OMDB to retrieve all relevant information when we have a given movie id or title. We use TMDb when we are running our algorithm and querying for a list of movies based on a user’s (or group of users’) preferences.
 
+We are hosting our application on Heroku.
+
+The last external sources we are using are two APIs - OMDB and The Movie Database (TMDb). We use OMDB to retrieve all relevant information when we have a given movie id or title. We use TMDb when we are running our algorithm and querying for a list of movies based on a user’s (or group of users’) preferences.
 
 ##Following our code
 
