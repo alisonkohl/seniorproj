@@ -133,152 +133,10 @@ router.post('/', function(req, res, next) {
 
 	/*If rateMovie is true, user is attempting to rate one of the movies they have been recommended*/
 	var rateMovie = postbody.rateMovie;
-	if (rateMovie == "true") {
-		/*Get their rating and movieDB average rating for this movie from form*/
-		var movieTitle = form_data.title;
-		var rating = parseInt(form_data.rating);
-		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
-		var recentFriendsString = form_data.recentFriends;
-
-		/*Upload to Firebase their rating (in difference) for that movie, and average rating for year and genre ranges*/
-		var authData = db.getAuth();
-		uid = authData.uid;
-		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
-		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
-
-			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
-			
-			/*Push their rating for this movie*/
-			var difference = rating - movieDbRatingFromForm;
-			var ratingsRef = specificUserRef.child("ratings");
-	  		ratingsRef.push({
-	  			title: movieTitle,
-	  			rating: rating,
-	  			average_rating_from_movie_db: movieDbRatingFromForm,
-	  			rating_difference: difference
-	  		});
-
-
-	  		/*Update the user's average rating for this year range*/
-	  		var year = form_data.year.substring(0, form_data.year.length - 1);
-	  		var rounded_year = year.replaceAt(3, "0");
-	  		var yearsRef = specificUserRef.child("years");
-  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
-
-  				var currValue = snapshot.val();
-  				var ratingAndCount = currValue.split(' ');
-  				var currRating = parseFloat(ratingAndCount[0]);
-  				var currDiff = parseFloat(ratingAndCount[1]);
-  				var currCount = parseFloat(ratingAndCount[2]);
-
-  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
-  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
-  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-  				foo = {};
-  				foo[rounded_year] = newRatingString;
-  				yearsRef.update(foo);
-
-  			});
-
-	  		/*Update the user's average rating for these genres*/
-	  		var genresRef = specificUserRef.child("genres");
-	  		var genreStringFromQuery = form_data.genreString;
-	  		var genreArray = genreStringFromQuery.split(', ');
-	  		var ids = [];
-	  		/*Convert OMDB genre names to movieDB genre numbers (as stored in Firebase)*/
-	  		for (i = 0; i < genreArray.length; i++) {
-	  			var genreName = genreArray[i];
-	  			console.log("genreName is: " + genreName);
-	  			switch(genreName) {
-	  				case "Animation":
-	  					ids.push("16");
-	  					break;
-	  				case "Sci-Fi":
-	  					ids.push("878");
-	  					break;
-	  				case "Fantasy":
-	  					ids.push("14");
-	  					break;
-	  				case "Comedy": 
-	  					ids.push("35");
-	  					break;
-	  				case "Mystery":
-	  					ids.push("9648");
-	  					break;
-	  				case "Action":
-	  					ids.push("28");
-	  					break;
-	  				case "Adventure":
-	  					ids.push("12");
-	  					break;
-	  				case "Drama":
-	  					ids.push("18");
-	  					break;
-	  				case "Documentary":
-	  					ids.push("99");
-	  					break;
-	  				case "Horror":
-	  					ids.push("27");
-	  					break;
-	  				case "Musical":
-	  					ids.push("10402");
-	  					break;
-	  				case "Romance":
-	  					ids.push("10749");
-	  					break;
-	  				case "Western":
-	  					ids.push("37");
-	  					break;
-	  				case "Thriller":
-	  					ids.push("53");
-	  					break;
-	  				case "Crime":
-	  					ids.push("80");
-	  					break;
-	  				case "War":
-	  					ids.push("10752");
-	  					break;
-	  				case "Family":
-	  					ids.push("10751");
-	  					break;
-	  			}
-	  		}
-
-	  		for (n = 0; n < ids.length; n++){
-	  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
-
-	  				var currValue = snapshot.val();
-	  				var ratingAndCount = currValue.split(' ');
-	  				var currRating = parseFloat(ratingAndCount[0]);
-	  				var currDiff = parseFloat(ratingAndCount[1]);
-	  				var currCount = parseFloat(ratingAndCount[2]);
-
-	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
-	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
-	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
-	  				foo = {};
-	  				foo[ids[n]] = newRatingString;
-	  				genresRef.update(foo);
-
-	  			});
-	  		}
-
-			/*Strip the movie that they just rated out of movieString*/
-			var movieString = postbody.movieString;
-			movieIndexInString = movieString.indexOf(movieTitle);
-			if (movieIndexInString > -1) {
-				var end_index = movieString.indexOf(";;", movieIndexInString);
-				movieString = movieString.substring(0, movieIndexInString) + movieString.substring(end_index + 2);
-			}
-			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': true, 'recentFriends': recentFriendsString});
-		});
-
-
-
 	/*This means we reach this page for the first time and need to generate the list of recommendations.
 
 	First, we calculate average ratings between all users for each genre and time period*/
-	} else {
+	if (rateMovie != "true") {
 		var g_arr = {"16": "0 0", "10751": "0 0", "14": "0 0", "878": "0 0", "35": "0 0", "9648": "0 0", "53": "0 0", "28": "0 0", "12": "0 0", "18": "0 0", "99": "0 0", "10769": "0 0", "27": "0 0", "10402": "0 0", "10749": "0 0", "10770": "0 0", "37": "0 0"};
 		var y_arr =  {"1900": "0 0", "1910": "0 0", "1920": "0 0", "1930": "0 0", "1940": "0 0", "1950": "0 0", "1960": "0 0", "1970": "0 0", "1980": "0 0", "1990": "0 0", "2000": "0 0", "2010": "0 0"};
 
@@ -509,7 +367,147 @@ router.post('/', function(req, res, next) {
 				}//renderlock = threshold
 			});//end func
 		}//end for (q = 0; q < query_arr.length; q++) {		
-	}//end else
+	} else {
+		/*Get their rating and movieDB average rating for this movie from form*/
+		var movieTitle = form_data.title;
+		var rating = parseInt(form_data.rating);
+		var movieDbRatingFromForm = parseFloat(form_data.movieDbRating);
+		var recentFriendsString = form_data.recentFriends;
+
+		/*Upload to Firebase their rating (in difference) for that movie, and average rating for year and genre ranges*/
+		var authData = db.getAuth();
+		uid = authData.uid;
+		var usersRef = new Firebase("https://watchwithus.firebaseio.com/users");
+		usersRef.orderByKey().equalTo(uid).on("child_added", function(snapshot) {
+
+			var specificUserRef = new Firebase("https://watchwithus.firebaseio.com/users/" + uid);
+			
+			/*Push their rating for this movie*/
+			var difference = rating - movieDbRatingFromForm;
+			var ratingsRef = specificUserRef.child("ratings");
+	  		ratingsRef.push({
+	  			title: movieTitle,
+	  			rating: rating,
+	  			average_rating_from_movie_db: movieDbRatingFromForm,
+	  			rating_difference: difference
+	  		});
+
+
+	  		/*Update the user's average rating for this year range*/
+	  		var year = form_data.year.substring(0, form_data.year.length - 1);
+	  		var rounded_year = year.replaceAt(3, "0");
+	  		var yearsRef = specificUserRef.child("years");
+  			yearsRef.orderByKey().equalTo(rounded_year).on("child_added", function(snapshot) {
+
+  				var currValue = snapshot.val();
+  				var ratingAndCount = currValue.split(' ');
+  				var currRating = parseFloat(ratingAndCount[0]);
+  				var currDiff = parseFloat(ratingAndCount[1]);
+  				var currCount = parseFloat(ratingAndCount[2]);
+
+  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
+  				foo = {};
+  				foo[rounded_year] = newRatingString;
+  				yearsRef.update(foo);
+
+  			});
+
+	  		/*Update the user's average rating for these genres*/
+	  		var genresRef = specificUserRef.child("genres");
+	  		var genreStringFromQuery = form_data.genreString;
+	  		var genreArray = genreStringFromQuery.split(', ');
+	  		var ids = [];
+	  		/*Convert OMDB genre names to movieDB genre numbers (as stored in Firebase)*/
+	  		for (i = 0; i < genreArray.length; i++) {
+	  			var genreName = genreArray[i];
+	  			console.log("genreName is: " + genreName);
+	  			switch(genreName) {
+	  				case "Animation":
+	  					ids.push("16");
+	  					break;
+	  				case "Sci-Fi":
+	  					ids.push("878");
+	  					break;
+	  				case "Fantasy":
+	  					ids.push("14");
+	  					break;
+	  				case "Comedy": 
+	  					ids.push("35");
+	  					break;
+	  				case "Mystery":
+	  					ids.push("9648");
+	  					break;
+	  				case "Action":
+	  					ids.push("28");
+	  					break;
+	  				case "Adventure":
+	  					ids.push("12");
+	  					break;
+	  				case "Drama":
+	  					ids.push("18");
+	  					break;
+	  				case "Documentary":
+	  					ids.push("99");
+	  					break;
+	  				case "Horror":
+	  					ids.push("27");
+	  					break;
+	  				case "Musical":
+	  					ids.push("10402");
+	  					break;
+	  				case "Romance":
+	  					ids.push("10749");
+	  					break;
+	  				case "Western":
+	  					ids.push("37");
+	  					break;
+	  				case "Thriller":
+	  					ids.push("53");
+	  					break;
+	  				case "Crime":
+	  					ids.push("80");
+	  					break;
+	  				case "War":
+	  					ids.push("10752");
+	  					break;
+	  				case "Family":
+	  					ids.push("10751");
+	  					break;
+	  			}
+	  		}
+
+	  		for (n = 0; n < ids.length; n++){
+	  			genresRef.orderByKey().equalTo(ids[n]).on("child_added", function(snapshot) {
+
+	  				var currValue = snapshot.val();
+	  				var ratingAndCount = currValue.split(' ');
+	  				var currRating = parseFloat(ratingAndCount[0]);
+	  				var currDiff = parseFloat(ratingAndCount[1]);
+	  				var currCount = parseFloat(ratingAndCount[2]);
+
+	  				var newRating = ((currRating * currCount) + rating)/(currCount + 1);
+	  				var newDiff = ((currDiff * currCount) + difference)/(currCount + 1);
+	  				var newRatingString = newRating.toString() + " " + newDiff.toString() + " " + (currCount + 1).toString();
+	  				foo = {};
+	  				foo[ids[n]] = newRatingString;
+	  				genresRef.update(foo);
+
+	  			});
+	  		}
+
+			/*Strip the movie that they just rated out of movieString*/
+			var movieString = postbody.movieString;
+			movieIndexInString = movieString.indexOf(movieTitle);
+			if (movieIndexInString > -1) {
+				var end_index = movieString.indexOf(";;", movieIndexInString);
+				movieString = movieString.substring(0, movieIndexInString) + movieString.substring(end_index + 2);
+			}
+			res.render('findmovie', {'index': form_data.index - 1, 'movieString': movieString, 'justrated': true, 'recentFriends': recentFriendsString});
+		});
+
+	}
 });//end post
 
 module.exports = router;
