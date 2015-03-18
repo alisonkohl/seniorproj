@@ -48,7 +48,7 @@
 			document.getElementById("window").appendChild(title);
 		</script>
 
-		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;" id="leftbutton"></span>
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;position:absolute;top:280px;left:10%;" id="leftbutton"></span>
 		<script>
 			$("#leftbutton").click(function() {
 				if (index == 0) {
@@ -63,26 +63,22 @@
 				$("#watchMovieGenres").val(allGenres[index]);
 
 				var poster = document.getElementById("poster");
-				poster.src = thumbnails[index];
+				poster.data = thumbnails[index];
 				var title = document.getElementById("title");
 				title.innerHTML = titles[index];
 			});
 		</script>
-
+		<object  id="poster" type="image/png" style="height:210px;width:155px;">
+	    	<img src="http://watchwithus.herokuapp.com/images/watchwithus404.png"/>
+	  	</object>
 		<script>
-			var poster = document.createElement("img");
-			poster.id = "poster";
-			poster.src = thumbnails[index];
-			console.log(thumbnails[index]);
-			console.log(titles[index]);
-			poster.style.height = '220px';
-			document.getElementById("window").appendChild(poster);
-			poster.onclick = function() {
+			$("#poster").attr("data", thumbnails[index]);
+			$("#poster").click(function() {
 				    $('body').append('<div id=\'overlay\' style=\'position:absolute;top:0%;left:0%;width:100%;height:100%;background:black;z-index:1001;opacity:0.8;\'></div>');
 				    $('body').append('<div id="synopsis" style=\'position:absolute;text-align:center;top:50%;left:50%;z-index:1002;overflow:auto;width:300px;height:400px;margin-left:-150px;margin-top:-200px;\'><p style="color:white;text-align:center;">' + '<strong>' + titles[index] + '(' + years[index] + ')</strong>' + '<br/>' + 'Directed by ' + directors[index] + '<br/>' + 'Starring: ' + actors[index] + '<br/><br/>' + synopses[index] + '</p></div>');
 				    $('#synopsis').append('<button id="close" onclick="closeSynopsis()" type="button">close</button>');
 
-			};
+			});
 
 		</script>
 		<script>
@@ -93,7 +89,7 @@
 			}
 		</script>
 
-		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;" id="rightbutton"></span>
+		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;position:absolute;top:280px;right:11%;" id="rightbutton"></span>
 		<script>
 			$("#rightbutton").click(function() {
 				if (index == sizeOfMoviesArray - 1) {
@@ -108,7 +104,7 @@
 				$("#watchMovieGenres").val(allGenres[index]);
 
 				var poster = document.getElementById("poster");
-				poster.src = thumbnails[index];
+				poster.data = thumbnails[index];
 				var title = document.getElementById("title");
 				title.innerHTML = titles[index];
 			});
