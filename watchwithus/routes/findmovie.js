@@ -161,7 +161,7 @@ router.post('/', function(req, res, next) {
 						rating_float = parseFloat(ratingArray[1]);
 						user_avg_g_rating = ((user_avg_g_rating * num_g_rated) + rating_float) / (num_g_rated + 1);
 						num_g_rated++;
-
+						
 						/*If one of the users consistently hates a genre, remove it*/
 						if ((rating_float < -1.0 && user_avg_g_rating >= -1.0) || (user_avg_g_rating < -1.0 && rating_float < user_avg_g_rating)) {
 							console.log("discarding1: " + rating_float + " " + user_avg_g_rating);
@@ -203,23 +203,23 @@ router.post('/', function(req, res, next) {
 						num_y_rated++;
 
 						/*If one of the users consistently hates a year, remove it*/
-						if ((rating_float < -1.0 && user_avg_y_rating >= -1.0) || (user_avg_y_rating < -1.0 && rating_float < user_avg_y_rating)) {
+						/*if ((rating_float < -1.0 && user_avg_y_rating >= -1.0) || (user_avg_y_rating < -1.0 && rating_float < user_avg_y_rating)) {
 							console.log("discarding2: " + rating_float + " " + user_avg_y_rating);
 							delete y_arr[snapshot.key()];
 
 						/*Else average in this user's value for that year*/
-						} else {
-							var temp_val = y_arr[snapshot.key()];
-							if (temp_val != undefined) {
-								temp_val = temp_val.split(' ');
-								var currRating = parseFloat(temp_val[0]);
-		  						var currCount = parseFloat(temp_val[1]);
+						//} else {
+						var temp_val = y_arr[snapshot.key()];
+						if (temp_val != undefined) {
+							temp_val = temp_val.split(' ');
+							var currRating = parseFloat(temp_val[0]);
+	  						var currCount = parseFloat(temp_val[1]);
 
-		  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
-				  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
-				  				y_arr[snapshot.key()] = newRatingString;
-				  			}
-						}
+	  						var newRating = ((currRating * currCount) + parseFloat(ratingArray[1]))/(currCount + 1);
+			  				var newRatingString = newRating.toString() + " " + (currCount + 1).toString();
+			  				y_arr[snapshot.key()] = newRatingString;
+			  			}
+						//}
 						y_lock++;
 					});
 				}
