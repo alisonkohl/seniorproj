@@ -29,6 +29,11 @@ h5 {
 	color: #12512d;
 }
 
+p {
+	font-family: 'Fredoka One', cursive;
+	color: #12512d;
+}
+
 .btn-default {
   color: #ffffff;
   background-color: #27ae60;
@@ -132,6 +137,10 @@ fieldset[disabled] .btn-default.active {
   -moz-transition: opacity 0.25s, width 0.25s;
   -o-transition: opacity 0.25s, width 0.25s;
   transition: opacity 0.25s, width 0.25s;
+}
+
+.progress-bar {
+	background-color: #12512d;
 }
 
 .has-spinner.active {

@@ -16,10 +16,10 @@ router.post('/', function(req, res, next) {
 	  if (error === null) {
 	  	
 	    console.log("Password reset email sent successfully");
-	    res.render('login', { title: 'Login', 'passwordResetMessage': "Password reset email sent." });
+	    res.render('login', { title: 'Login', 'message': "Please check your email for instructions on how to reset your password." });
 	  } else {
 	    console.log("Error sending password reset email:", error);
-	    res.render('reset', { title: 'Reset',  'passwordResetMessage': "Password reset email not sent. Please try again."});
+	    res.render('reset', { title: 'Reset',  'message': "Email address not found. Please try again"});
 	  }
 	});
 });
