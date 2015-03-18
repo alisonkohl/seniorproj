@@ -263,16 +263,16 @@ router.post('/', function(req, res, next) {
 					if (num_per_2 != 0) {
 						/*Add in vote average from movieDB (fencepost not included)*/
 						for (r = 0; r < num_per_2 - 1; r++) {
-							movieString += (results[r].title + "*" + results[r].vote_average + ";;");
+							movieString += (results[r].title + "*" + results[r].vote_average + "*" + results[r].poster_path + "*" + ";;");
 							render_lock++;
 						}
 						/*Fencepost for last result of the last query (don't add a semicolon at end)*/
 						if (q == query_arr.length - 1) {
-							movieString += (results[results.length - 1].title + "*" + results[r].vote_average);
+							movieString += (results[results.length - 1].title + "*" + results[r].poster_path + "*" + results[r].vote_average);
 							render_lock++;
 						/*If not last result of last query, then treat normally*/
 						} else {
-							movieString += (results[results.length - 1].title + "*" + results[r].vote_average + ";;");
+							movieString += (results[results.length - 1].title + "*" + results[r].vote_average + "*" + results[r].poster_path + ";;");
 							render_lock++;
 						}
 					}
@@ -304,7 +304,7 @@ router.post('/', function(req, res, next) {
 								render_lock_2++;
 								continue;
 							}
-							m_arr[movieName] = movieData[1];
+							m_arr[movieName] = movieData[1] + "*" + movieData[2];
 
 							request({
 					      		uri: "http://www.omdbapi.com/?t=" + encodeURI(movieName) + "&y=&plot=short&r=json",
@@ -312,8 +312,6 @@ router.post('/', function(req, res, next) {
 							}, function(error, response, body) {
 								/*Increment render_lock_2 each time you add the additional information to a movie.
 								Keep going until all movies have had additional information added.*/
-								console.log("num down is: " + num_movies_without_repeats);
-								console.log("render lock is: " + render_lock_2);
 								if (render_lock_2 < num_movies_without_repeats) {
 									if (body != undefined) {
 										/*Fix the body for special issues*/
@@ -342,13 +340,15 @@ router.post('/', function(req, res, next) {
 											var director = doc3.Director;
 											var writer = doc3.Writer;
 											var actors = doc3.Actors;
-											var thumbnail = doc3.Poster;
-											var m_arr_data = m_arr[newTitle];
+											//var thumbnail = doc3.Poster;
 
 											/*Add all data on this movie to movieStringNew if the title on omdb matched with tmdb movie title
 											(meaning m_arr_data != undefined)*/
-											if (m_arr_data != undefined) {
-												movieStringNew += (newTitle + "*" + m_arr_data + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
+											if (m_arr[newTitle] != undefined) {
+												var title_and_thumbnail = m_arr[newTitle].split('*');
+												var avg_rating = title_and_thumbnail[0];
+												var thumbnail = "http://image.tmdb.org/t/p/w150" + title_and_thumbnail[1];
+												movieStringNew += (newTitle + "*" + avg_rating + "*" + newYear + "*" + runtime + "*" + genres + "*" + synopsis + "*" + director + "*" + writer + "*" + actors + "*" + thumbnail + ";;");
 											}
 										}
 									}
