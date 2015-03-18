@@ -41,11 +41,11 @@
 		{{else}}
 			<p id = "thanksForRating" style="visibility: hidden">Thanks for rating!</p>
 		{{/if}}
+		<div style="height:80px;">
+			<h2 id="title"></h2>
+		</div>
 		<script>
-			var title = document.createElement("h1");
-			title.id = "title";
-			title.innerHTML = titles[index];
-			document.getElementById("window").appendChild(title);
+			$("#title").html(titles[index]);
 		</script>
 
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;position:absolute;top:280px;left:10%;" id="leftbutton"></span>
