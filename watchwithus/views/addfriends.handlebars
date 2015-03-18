@@ -1,5 +1,5 @@
-<script type="text/javascript" src="javascripts/spin.js"></script>
-<center>
+<link rel="stylesheet" src="stylesheets/style.css" type="text/css">
+<center id = "center">
 	<h1>Who are you watching with?</h1>
 	<p>Search for your friends by username:</p>
 	<select class="js-example-basic-multiple" name="group" form="friendsform" multiple="multiple" style="width: 90%">
@@ -14,37 +14,19 @@
 			{{/each}}
 		</optgroup>
 	</select>
-	<form id="friendsform" style="margin-top: 40px;" action="/findmovie" method="POST" onclick="showLoading()">
+	<form id="friendsform" style="margin-top: 40px;" action="/findmovie" method="POST" onclick="load()">
 		<input type="hidden" value=-1 name="index"/>
 		<center><button type="submit" class="btn btn-default" id="submitButton">Let's Go!</button></center>
 	</form>
-	<div id="load"></div>
+	<div id = "loader"></div>
 	<script>
 		$(".js-example-basic-multiple").select2();
 	</script>
 </center>
 
 <script>
-	$("#submitButton").click(function() {
-		var opts = {
-		  lines: 11, // The number of lines to draw
-		  length: 0, // The length of each line
-		  width: 17, // The line thickness
-		  radius: 40, // The radius of the inner circle
-		  corners: 1, // Corner roundness (0..1)
-		  rotate: 31, // The rotation offset
-		  direction: 1, // 1: clockwise, -1: counterclockwise
-		  color: '#000', // #rgb or #rrggbb or array of colors
-		  speed: 1, // Rounds per second
-		  trail: 71, // Afterglow percentage
-		  shadow: false, // Whether to render a shadow
-		  hwaccel: false, // Whether to use hardware acceleration
-		  className: 'spinner', // The CSS class to assign to the spinner
-		  zIndex: 2e9, // The z-index (defaults to 2000000000)
-		  top: '65%', // Top position relative to parent
-		  left: '50%' // Left position relative to parent
-		};
-		var target = document.getElementById('load');
-		var spinner = new Spinner(opts).spin(target);
-	});
+	function load() {
+		var loader = document.getElementById("loader");
+		loader.innerHTML = "<div class=\"loader\">Loading...</div>"
+	}
 </script>

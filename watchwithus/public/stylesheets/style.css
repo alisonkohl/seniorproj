@@ -167,3 +167,70 @@ fieldset[disabled] .btn-default.active {
 .has-spinner.btn-large.active .spinner {
     width: 19px;
 }
+
+
+.loader {
+  font-size: 20px;
+  margin: 5em auto;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-animation: load4 1.3s infinite linear;
+  animation: load4 1.3s infinite linear;
+}
+@-webkit-keyframes load4 {
+  0%,
+  100% {
+    box-shadow: 0em -3em 0em 0.2em #008000, 2em -2em 0 0em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 0em #008000;
+  }
+  12.5% {
+    box-shadow: 0em -3em 0em 0em #008000, 2em -2em 0 0.2em #008000, 3em 0em 0 0em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  25% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 0em #008000, 3em 0em 0 0.2em #008000, 2em 2em 0 0em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  37.5% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 0em #008000, 2em 2em 0 0.2em #008000, 0em 3em 0 0em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  50% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 0em #008000, 0em 3em 0 0.2em #008000, -2em 2em 0 0em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  62.5% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 0em #008000, -2em 2em 0 0.2em #008000, -3em 0em 0 0em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  75% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 0em #008000, -3em 0em 0 0.2em #008000, -2em -2em 0 0em #008000;
+  }
+  87.5% {
+    box-shadow: 0em -3em 0em 0em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 0em #008000, -3em 0em 0 0em #008000, -2em -2em 0 0.2em #008000;
+  }
+}
+@keyframes load4 {
+  0%,
+  100% {
+    box-shadow: 0em -3em 0em 0.2em #008000, 2em -2em 0 0em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 0em #008000;
+  }
+  12.5% {
+    box-shadow: 0em -3em 0em 0em #008000, 2em -2em 0 0.2em #008000, 3em 0em 0 0em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  25% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 0em #008000, 3em 0em 0 0.2em #008000, 2em 2em 0 0em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  37.5% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 0em #008000, 2em 2em 0 0.2em #008000, 0em 3em 0 0em #008000, -2em 2em 0 -0.5em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  50% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 0em #008000, 0em 3em 0 0.2em #008000, -2em 2em 0 0em #008000, -3em 0em 0 -0.5em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  62.5% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 0em #008000, -2em 2em 0 0.2em #008000, -3em 0em 0 0em #008000, -2em -2em 0 -0.5em #008000;
+  }
+  75% {
+    box-shadow: 0em -3em 0em -0.5em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 0em #008000, -3em 0em 0 0.2em #008000, -2em -2em 0 0em #008000;
+  }
+  87.5% {
+    box-shadow: 0em -3em 0em 0em #008000, 2em -2em 0 -0.5em #008000, 3em 0em 0 -0.5em #008000, 2em 2em 0 -0.5em #008000, 0em 3em 0 -0.5em #008000, -2em 2em 0 0em #008000, -3em 0em 0 0em #008000, -2em -2em 0 0.2em #008000;
+  }
+}
