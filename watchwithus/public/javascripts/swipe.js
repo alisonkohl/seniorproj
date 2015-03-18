@@ -29,6 +29,7 @@ require('node-touch')();
 var windowElem = document.getElementById("window");
 
 windowElem.addEventListener('swipeend', function (event) {
+  console.log("here");
   if (event.direction == "RIGHT") {
     if (index == sizeOfMoviesArray - 1) {
           index = 0;
