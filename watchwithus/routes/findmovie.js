@@ -61,7 +61,6 @@ function getQueryArr(g_arr, y_arr) {
 	var num_categories_rated = 0;
 	for (var g2 in g_arr) {
 		for (var y2 in y_arr) {
-			//so here i want to generate combo queries based on the rating
 			if (g_arr.hasOwnProperty(g2) && y_arr.hasOwnProperty(y2)) {
 				var g_rating_split = g_arr[g2].split(' ');
 				var g_rating = parseFloat(g_rating_split[0]);
@@ -74,7 +73,6 @@ function getQueryArr(g_arr, y_arr) {
 				user_avg_rating = ((user_avg_rating * num_categories_rated) + g_y_avg) / (num_categories_rated + 1);
 				num_categories_rated++;
 				if ((g_y_avg < 0 && user_avg_rating >= 0) || (user_avg_rating < 0 && g_y_avg < user_avg_rating)) {
-					console.log("discarding: " + g_y_avg + " " + user_avg_rating);
 					continue;
 				}
 				var rating_min = 7.3 - g_y_avg;
@@ -164,7 +162,6 @@ router.post('/', function(req, res, next) {
 
 						/*If one of the users consistently hates a genre, remove it*/
 						if ((rating_float < -1.0 && users_avg_g_rating >= -1.0) || (users_avg_g_rating < -1.0 && rating_float < users_avg_g_rating)) {
-							console.log("discarding1: " + rating_float + " " + users_avg_g_rating);
 							delete g_arr[snapshot.key()];
 
 						/*Else average in this user's value for that year*/
@@ -202,13 +199,6 @@ router.post('/', function(req, res, next) {
 						user_avg_y_rating = ((user_avg_y_rating * num_y_rated) + rating_float) / (num_y_rated + 1);
 						num_y_rated++;
 
-						/*If one of the users consistently hates a year, remove it*/
-						/*if ((rating_float < -1.0 && user_avg_y_rating >= -1.0) || (user_avg_y_rating < -1.0 && rating_float < user_avg_y_rating)) {
-							console.log("discarding2: " + rating_float + " " + user_avg_y_rating);
-							delete y_arr[snapshot.key()];
-
-						/*Else average in this user's value for that year*/
-						//} else {
 						var temp_val = y_arr[snapshot.key()];
 						if (temp_val != undefined) {
 							temp_val = temp_val.split(' ');
@@ -238,7 +228,6 @@ router.post('/', function(req, res, next) {
 		var num_per = Math.floor(200 / query_arr.length);
 		num_per++;
 		if (num_per > 20) num_per = 20;
-		console.log("numper is: " + num_per);
 
 		var movieString = "";
 		//These are locking variables for asynchronous purposes
@@ -248,7 +237,6 @@ router.post('/', function(req, res, next) {
 		if (render_threshhold > (num_per * query_arr.length)) {
 			render_threshhold = (num_per * query_arr.length + 1);
 		}
-		console.log("query arr len is: " + query_arr.length);
 		/*Push the additional catch-all query if the list is too short*/
 		if (query_arr.length <= 5) {
 			var query_to_push = "vote_average.gte=7.5";
@@ -275,14 +263,11 @@ router.post('/', function(req, res, next) {
 
 					/*Make sure we are not trying to pull more than number of results*/
 					var num_per_2 = num_per;
-					console.log("number of results was: " + results.length);
 					if (num_per_2 > results.length) {
 						if ((render_threshhold - (num_per_2 - results.length)) >= num_per) {
 							render_threshhold = render_threshhold - (num_per_2 - results.length);
-							console.log("render_threshhold is now: " + render_threshhold);
 						} else {
 							render_threshhold = num_per;
-							console.log("render_threshhold at bottom. it is now: " + render_threshhold);
 						}
 						num_per_2 = results.length;
 					}
@@ -305,11 +290,9 @@ router.post('/', function(req, res, next) {
 					}
 				}
 
-				console.log("lock is: " + render_lock + " and thresh is: " + render_threshhold);
 				/*Continue once render_lock has reached render_threshhold (set at 50) */
 				if (render_lock >= render_threshhold) {
 					if (triggered == false) {
-						console.log("moving on. renderlock is: " + render_lock);
 						triggered = true;
 
 						/*Additional set of locking parameters*/
@@ -320,7 +303,6 @@ router.post('/', function(req, res, next) {
 
 						/*Split up movieString and save each movie into m_arr[title] -> vote_average*/
 						movieStringArr = movieString.split(';;');
-						console.log("moviestringlen before omdb is: " + movieStringArr.length);
 						shuffle(movieStringArr);
 						var m_arr = {};
 						var num_movies_without_repeats = movieStringArr.length;
@@ -386,8 +368,6 @@ router.post('/', function(req, res, next) {
 								}
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
-										console.log("final num movies was: " + movieStringArr.length);
-										console.log("final render lock was " + render_lock_2);
 										triggered_2 = true;
 										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': false, 'recentFriends': friendsString});
 									}
