@@ -253,7 +253,7 @@ windowElem.addEventListener('swipeend', function (event) {
     $("#rateMovieTitle").val(titles[index]);  */
 
     var poster = document.getElementById("poster");
-    poster.data = thumbnails[index];
+    poster.src = thumbnails[index];
     var title = document.getElementById("title");
     title.innerHTML = titles[index];
     var thanksForRatingElem = document.getElementById("thanksForRating");
@@ -278,7 +278,7 @@ windowElem.addEventListener('swipeend', function (event) {
     $("#rateMovieTitle").val(titles[index]);*/
 
     var poster = document.getElementById("poster");
-    poster.data = thumbnails[index];
+    poster.src = thumbnails[index];
     var title = document.getElementById("title");
     title.innerHTML = titles[index];
     var thanksForRatingElem = document.getElementById("thanksForRating");
