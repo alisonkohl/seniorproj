@@ -77,7 +77,7 @@ function getQueryArr(g_arr, y_arr) {
 					console.log("discarding: " + g_y_avg + " " + user_avg_rating);
 					continue;
 				}
-				var rating_min = 8.0 - g_y_avg;
+				var rating_min = 7.3 - g_y_avg;
 
 				var low_year = y2;
 				var high_year = 0;
@@ -237,14 +237,17 @@ router.post('/', function(req, res, next) {
 		/*Calculate number of movies to recommend for each genre-year combination*/
 		var num_per = Math.floor(200 / query_arr.length);
 		num_per++;
+		if (num_per > 20) num_per = 20;
 		console.log("numper is: " + num_per);
 
 		var movieString = "";
 		//These are locking variables for asynchronous purposes
 		var render_lock = 0;
 		var triggered = false;
-		var render_threshhold = 50;
-
+		var render_threshhold = 100;
+		if (render_threshhold > (num_per * query_arr.length)) {
+			render_threshhold = (num_per * query_arr.length + 1);
+		}
 		console.log("query arr len is: " + query_arr.length);
 		/*Push the additional catch-all query if the list is too short*/
 		if (query_arr.length <= 5) {
@@ -266,7 +269,7 @@ router.post('/', function(req, res, next) {
 		      		method: "GET",
 			}, function(error, response, body) {
 				/*Increment render_lock each time you add a movie. Keep going until render_lock reaches 50.*/
-				if (render_lock < 50) {
+				if (render_lock < 100) {
 					var doc = JSON.parse(body);
 					var results = doc.results;
 
@@ -274,7 +277,13 @@ router.post('/', function(req, res, next) {
 					var num_per_2 = num_per;
 					console.log("number of results was: " + results.length);
 					if (num_per_2 > results.length) {
-						render_threshhold = render_threshhold - (num_per_2 - results.length);
+						if ((render_threshhold - (num_per_2 - results.length)) >= num_per) {
+							render_threshhold = render_threshhold - (num_per_2 - results.length);
+							console.log("render_threshhold is now: " + render_threshhold);
+						} else {
+							render_threshhold = num_per;
+							console.log("render_threshhold at bottom. it is now: " + render_threshhold);
+						}
 						num_per_2 = results.length;
 					}
 
@@ -296,9 +305,11 @@ router.post('/', function(req, res, next) {
 					}
 				}
 
-				/*Continue once render_lock has reached render_threshold (set at 50) */
+				console.log("lock is: " + render_lock + " and thresh is: " + render_threshhold);
+				/*Continue once render_lock has reached render_threshhold (set at 50) */
 				if (render_lock >= render_threshhold) {
 					if (triggered == false) {
+						console.log("moving on. renderlock is: " + render_lock);
 						triggered = true;
 
 						/*Additional set of locking parameters*/
@@ -375,6 +386,7 @@ router.post('/', function(req, res, next) {
 								}
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
+										console.log("final num movies was: " + movieStringArr.length);
 										console.log("final render lock was " + render_lock_2);
 										triggered_2 = true;
 										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': false, 'recentFriends': friendsString});
