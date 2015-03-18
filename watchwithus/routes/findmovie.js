@@ -57,6 +57,8 @@ String.prototype.replaceAt=function(index, character) {
 /*Use the genre and year preferences to generate the array of movieDB queries*/
 function getQueryArr(g_arr, y_arr) {
 	var query_arr = new Array();
+	var user_avg_rating = 0;
+	var num_categories_rated = 0;
 	for (var g2 in g_arr) {
 		for (var y2 in y_arr) {
 			//so here i want to generate combo queries based on the rating
@@ -69,7 +71,10 @@ function getQueryArr(g_arr, y_arr) {
 					continue;
 				}
 				var g_y_avg = (g_rating + y_rating) / 2;
-				if (g_y_avg < 0) {
+				user_avg_rating = ((user_avg_rating * num_categories_rated) + g_y_avg) / (num_categories_rated + 1);
+				num_categories_rated++;
+				if ((g_y_avg < 0 && user_avg_rating >= 0) || (user_avg_rating < 0 && g_y_avg < user_avg_rating)) {
+					console.log("discarding: " + g_y_avg + " " + user_avg_rating);
 					continue;
 				}
 				var rating_min = 8.0 - g_y_avg;
@@ -111,7 +116,6 @@ router.post('/', function(req, res, next) {
 
 	/*Get the group of friends the user is watching with*/
 	var group = postbody.group;
-	console.log("group is: " + group);
 	//watching alone, create new array
 	if (group == undefined) {
 		group = new Array();
@@ -148,15 +152,22 @@ router.post('/', function(req, res, next) {
 				var genresRef = specificUserRef.child("genres");
 				var all_genres = ["16", "10751", "14", "878", "35", "9648", "53", "28", "12", "18", "99", "10769", "27", "10402", "10749", "10770", "37"];
 				var g_lock = 0;
+				var user_avg_g_rating = 0;
+				var num_g_rated = 0;
 				for (g = 0; g < all_genres.length; g++) {
 					genresRef.orderByKey().equalTo(all_genres[g]).once("child_added", function(snapshot) {
 						average_rating = snapshot.val();
 						var ratingArray = average_rating.split(' ');
+						rating_float = parseFloat(ratingArray[1]);
+						user_avg_g_rating = ((user_avg_g_rating * num_g_rated) + rating_float) / (num_g_rated + 1);
+						num_g_rated++;
 
 						/*If one of the users consistently hates a genre, remove it*/
-						if (parseFloat(ratingArray[1]) <= (-1.5)) {
+						if ((rating_float < -1.0 && user_avg_g_rating >= -1.0) || (user_avg_g_rating < -1.0 && rating_float < user_avg_g_rating)) {
+							console.log("discarding1: " + rating_float + " " + user_avg_g_rating);
 							delete g_arr[snapshot.key()];
-						/*Else average in this user's value for that genre*/
+
+						/*Else average in this user's value for that year*/
 						} else {
 							var temp_val = g_arr[snapshot.key()];
 							if (temp_val != undefined) {
@@ -175,22 +186,27 @@ router.post('/', function(req, res, next) {
 				/*Wait in here until we have looked through all genres.*/
 				while (g_lock < all_genres.length) {
 				}
-				console.log("done");
 
 
 				/*Average in year-rating values for this user*/
 				var yearsRef = specificUserRef.child("years");
 				var all_years = ["1900", "1910", "1920", "1930", "1940", "1950", "1960", "1970", "1980", "1990", "2000", "2010"];
 				var y_lock = 0;
-
+				var user_avg_y_rating = 0;
+				var num_y_rated = 0;
 				for (y = 0; y < all_years.length; y++) {
 					yearsRef.orderByKey().equalTo(all_years[y]).once("child_added", function(snapshot) {
 						average_rating = snapshot.val();
 						var ratingArray = average_rating.split(' ');
+						rating_float = parseFloat(ratingArray[1]);
+						user_avg_y_rating = ((user_avg_y_rating * num_y_rated) + rating_float) / (num_y_rated + 1);
+						num_y_rated++;
 
 						/*If one of the users consistently hates a year, remove it*/
-						if (parseFloat(ratingArray[1]) <= -1.5) {
+						if ((rating_float < -1.0 && user_avg_y_rating >= -1.0) || (user_avg_y_rating < -1.0 && rating_float < user_avg_y_rating)) {
+							console.log("discarding2: " + rating_float + " " + user_avg_y_rating);
 							delete y_arr[snapshot.key()];
+
 						/*Else average in this user's value for that year*/
 						} else {
 							var temp_val = y_arr[snapshot.key()];
@@ -211,7 +227,6 @@ router.post('/', function(req, res, next) {
 				/*Wait in here until we have looked through all years.*/
 				while (y_lock < all_years.length) {
 				}
-				console.log("done");
 
 			}
 		});
@@ -220,8 +235,9 @@ router.post('/', function(req, res, next) {
 		var query_arr = getQueryArr(g_arr, y_arr);
 
 		/*Calculate number of movies to recommend for each genre-year combination*/
-		var num_per = Math.floor(100 / query_arr.length);
+		var num_per = Math.floor(200 / query_arr.length);
 		num_per++;
+		console.log("numper is: " + num_per);
 
 		var movieString = "";
 		//These are locking variables for asynchronous purposes
@@ -229,6 +245,7 @@ router.post('/', function(req, res, next) {
 		var triggered = false;
 		var render_threshhold = 50;
 
+		console.log("query arr len is: " + query_arr.length);
 		/*Push the additional catch-all query if the list is too short*/
 		if (query_arr.length <= 5) {
 			var query_to_push = "vote_average.gte=7.5";
@@ -255,6 +272,7 @@ router.post('/', function(req, res, next) {
 
 					/*Make sure we are not trying to pull more than number of results*/
 					var num_per_2 = num_per;
+					console.log("number of results was: " + results.length);
 					if (num_per_2 > results.length) {
 						render_threshhold = render_threshhold - (num_per_2 - results.length);
 						num_per_2 = results.length;
@@ -291,6 +309,7 @@ router.post('/', function(req, res, next) {
 
 						/*Split up movieString and save each movie into m_arr[title] -> vote_average*/
 						movieStringArr = movieString.split(';;');
+						console.log("moviestringlen before omdb is: " + movieStringArr.length);
 						shuffle(movieStringArr);
 						var m_arr = {};
 						var num_movies_without_repeats = movieStringArr.length;
@@ -356,6 +375,7 @@ router.post('/', function(req, res, next) {
 								}
 								if (render_lock_2 == num_movies_without_repeats - 1) {
 									if (triggered_2 == false) {
+										console.log("final render lock was " + render_lock_2);
 										triggered_2 = true;
 										res.render('findmovie', {'index': 0, 'movieString': movieStringNew, 'justrated': false, 'recentFriends': friendsString});
 									}
@@ -420,7 +440,6 @@ router.post('/', function(req, res, next) {
 	  		/*Convert OMDB genre names to movieDB genre numbers (as stored in Firebase)*/
 	  		for (i = 0; i < genreArray.length; i++) {
 	  			var genreName = genreArray[i];
-	  			console.log("genreName is: " + genreName);
 	  			switch(genreName) {
 	  				case "Animation":
 	  					ids.push("16");
