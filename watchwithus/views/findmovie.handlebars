@@ -49,27 +49,27 @@
 
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="font-size:30px;position:absolute;top:280px;left:10%;" id="leftbutton"></span>
 		<script>
-			$("#leftbutton").click(function() {
-				if (index == 0) {
-					index = sizeOfMoviesArray - 1;
-				} else {
-					index--;
-				}
+			// $("#leftbutton").click(function() {
+			// 	if (index == 0) {
+			// 		index = sizeOfMoviesArray - 1;
+			// 	} else {
+			// 		index--;
+			// 	}
 
-				var thanksForRatingElem = document.getElementById("thanksForRating");
-    			thanksForRatingElem.style.display = "none";
+			// 	var thanksForRatingElem = document.getElementById("thanksForRating");
+   //  			thanksForRatingElem.style.display = "none";
 
-				$("#watchMovieRating").val(aggregateRatings[index]);
-				$("#watchMovieYear").val(years[index]);
-				$("#watchMovieTitle").val(titles[index]);
-				$("#watchMovieThumbnail").val(thumbnails[index]);
-				$("#watchMovieGenres").val(allGenres[index]);
+			// 	$("#watchMovieRating").val(aggregateRatings[index]);
+			// 	$("#watchMovieYear").val(years[index]);
+			// 	$("#watchMovieTitle").val(titles[index]);
+			// 	$("#watchMovieThumbnail").val(thumbnails[index]);
+			// 	$("#watchMovieGenres").val(allGenres[index]);
 
-				var poster = document.getElementById("poster");
-				poster.src = thumbnails[index];
-				var title = document.getElementById("title");
-				title.innerHTML = titles[index];
-			});
+			// 	var poster = document.getElementById("poster");
+			// 	poster.src = thumbnails[index];
+			// 	var title = document.getElementById("title");
+			// 	title.innerHTML = titles[index];
+			// });
 		</script>
 	  	<img id="poster" style="height:210px;width:155px;"/>
 		<script>
@@ -93,27 +93,27 @@
 
 		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="font-size:30px;position:absolute;top:280px;right:11%;" id="rightbutton"></span>
 		<script>
-			$("#rightbutton").click(function() {
-				if (index == sizeOfMoviesArray - 1) {
-					index = 0;
-				} else {
-					index++;
-				}
+			// $("#rightbutton").click(function() {
+			// 	if (index == sizeOfMoviesArray - 1) {
+			// 		index = 0;
+			// 	} else {
+			// 		index++;
+			// 	}
 
-				var thanksForRatingElem = document.getElementById("thanksForRating");
-    			thanksForRatingElem.style.display = "none";
+			// 	var thanksForRatingElem = document.getElementById("thanksForRating");
+   //  			thanksForRatingElem.style.display = "none";
 
-				$("#watchMovieRating").val(aggregateRatings[index]);
-				$("#watchMovieYear").val(years[index]);
-				$("#watchMovieTitle").val(titles[index]);
-				$("#watchMovieThumbnail").val(thumbnails[index]);
-				$("#watchMovieGenres").val(allGenres[index]);
+			// 	$("#watchMovieRating").val(aggregateRatings[index]);
+			// 	$("#watchMovieYear").val(years[index]);
+			// 	$("#watchMovieTitle").val(titles[index]);
+			// 	$("#watchMovieThumbnail").val(thumbnails[index]);
+			// 	$("#watchMovieGenres").val(allGenres[index]);
 
-				var poster = document.getElementById("poster");
-				poster.src = thumbnails[index];
-				var title = document.getElementById("title");
-				title.innerHTML = titles[index];
-			});
+			// 	var poster = document.getElementById("poster");
+			// 	poster.src = thumbnails[index];
+			// 	var title = document.getElementById("title");
+			// 	title.innerHTML = titles[index];
+			// });
 		</script>
 		<br/>
 		<br/>
