@@ -69,7 +69,7 @@ function getQueryArr(g_arr, y_arr) {
 					continue;
 				}
 				var g_y_avg = (g_rating + y_rating) / 2;
-				if (g_y_avg < 0.5) {
+				if (g_y_avg < 0) {
 					continue;
 				}
 				var rating_min = 8.0 - g_y_avg;
@@ -220,7 +220,7 @@ router.post('/', function(req, res, next) {
 		var query_arr = getQueryArr(g_arr, y_arr);
 
 		/*Calculate number of movies to recommend for each genre-year combination*/
-		var num_per = Math.floor(50 / query_arr.length);
+		var num_per = Math.floor(100 / query_arr.length);
 		num_per++;
 
 		var movieString = "";
